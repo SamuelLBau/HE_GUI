@@ -9,6 +9,7 @@ from glob import glob
 
 class mapPanel(tk.Frame):
     image = 0 #this is needed to store the image
+    imageFilePath = 0
     imageNameLabel = 0
     defaultImagePath = 0
     IMSize = 190, 270
@@ -30,6 +31,7 @@ class mapPanel(tk.Frame):
             path = self.defaultImagePath
             print("Map not found, loading default image")
         print("Setting map image at path: %s " %(path))
+        self.imageFilePath = path
         
         self.image = 0        
         self.image = Image.open(path)
@@ -51,3 +53,7 @@ class mapPanel(tk.Frame):
         self.imageNameLabel.insert('insert',dispPath)
         self.imageNameLabel.config(state='disable')
         #self.imageCanvas.pack_forget()
+        
+        
+    def getFilePath(self):
+        return self.imageFilePath

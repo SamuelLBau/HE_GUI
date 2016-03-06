@@ -12,13 +12,15 @@ from metaDataPanel import metaDataPanel
 from fileSelectorFrame import fileSelectorFrame
 
 from logParser import *
-from MetaFileReader import MetaFileReader
+from logFileReader import logFileReader
 from HEdataObject import HEdataObject
+from access_meta_file import *
 
 from simpleDialogs import *
 from tempRangeDialog import temperatureDialog
 
 class mainFrame(tk.Frame):
+    profileFieldList = ["metaFile","irDir","visDir","tiffFile"]
     visImageFrame = 0
     irImageFrame = 0
     mapImageFrame = 0
@@ -32,7 +34,7 @@ class mainFrame(tk.Frame):
     defaultVisImagePath = ""
     defaultTiffPath = ""
     defaultMetaFile = ""
-    metaFileReader = 0
+    logFileReader = 0
     
     visSuffix = ".png"
     irSuffix = ".png"
@@ -61,7 +63,7 @@ class mainFrame(tk.Frame):
       #  self.defaultTiffDir = os.path.dirname(os.path.realpath(__file__)) + '/defaultTiff/'
       #  self.defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/defaultMetaFile/log.txt'
 
-        self.metaFileReader = MetaFileReader()
+        self.logFileReader = logFileReader()
 
         #self.grid()
         self.placeFrames()
@@ -95,14 +97,6 @@ class mainFrame(tk.Frame):
         self.irImageFrame.setupSecondButton("Change temperature Range",self.createTempRangeDialog)
        
 
-#    def changeImage(self):
-#        programPath = os.path.dirname(__file__);
-#        self.image = Image.open(imagePath)
-#        photo = ImageTk.PhotoImage(self.image)
-#        #try:
-#        self.image = photo
-#        self.canvas.create_image(1,1,image=self.image,anchor='nw')
-#        self.update()
 
         
     def newImageSelected(self,imageID):
@@ -114,14 +108,10 @@ class mainFrame(tk.Frame):
         self.irImageFrame.findNewImage(imageID)
         
         #This should just be an array of strings, easy to print
-        row = self.metaFileReader.getImageRow(imageID)
+        row = self.logFileReader.getImageRow(imageID)
         dataObject = logLineParser(row)
 
         self.metaDataFrame.loadData(dataObject.printArray())
-        #print(dataObject.printArray())
-        #dataList = dataObject.printArray()
-        
-        #self.metaDataFrame.updateData(dataList)
     
         
         
@@ -135,9 +125,9 @@ class mainFrame(tk.Frame):
         if(not os.path.isfile(metaFile)):
             print("Selection was not a file, cannot read")
             return    
-        self.metaFileReader.setNewMetaFile(metaFile)
-        #imageIDList = self.metaFileReader.getColumn('imageID')
-        self.imageListFrame.loadNewImages(self.metaFileReader.getColumn('imageID'))
+        self.logFileReader.setNewMetaFile(metaFile)
+        #imageIDList = self.logFileReader.getColumn('imageID')
+        self.imageListFrame.loadNewImages(self.logFileReader.getColumn('imageID'))
         self.imageListFrame.setMetaFile(metaFile)
         
     def createTempRangeDialog(self):
@@ -147,11 +137,10 @@ class mainFrame(tk.Frame):
     def changeIRTempRange(self,values):
         lowTemp = values[0]
         highTemp = values[1]
-        print("Low temp = [%d], HighTemp = [%d]" %(lowTemp,highTemp))
         
         print("TODO: Use low and high values to edit IR image")
         
-    def selectNewTiffFile(self):
+    def selectNewTiffFile(self,tiffFile=""):
         print("TODO: Make Tiff file selectable, link to a button on mapPanel")
         
     def selectNewVisImageDir(self,directory=""):
@@ -172,10 +161,61 @@ class mainFrame(tk.Frame):
             return          
         self.irImageFrame.setDir(directory)
         
-    def saveProfile():
-        print("TODO: Add load profile code:")
-    def loadProfile():
-        print("TODO: Add load profile code:")
+    def saveProfile(self=None,filePath=""):
+    
+        print("TODO: Add save profile code:")
+        #Assume at this time file either does not exist, or can be overwritten
+        filePath = "C:/Users/Work/Documents/Files/Projects/HarpyEagle/HE_GUI/gui_layer/guiProfiles/newProfile.profile"
+        #Make sure this stays same as above
+        #profileFieldList = ["metaFile","irDir","visDir","tiffFile"]
+        stringList= []
+        key = self.profileFieldList[0]
+        value = self.imageListFrame.getFilePath()
+        stringList.append(value)
+        
+        key = self.profileFieldList[1]
+        value = self.irImageFrame.getDirectory()
+        stringList.append(value)
+        
+        key = self.profileFieldList[2]
+        value = self.visImageFrame.getDirectory()
+        stringList.append(value)
+        
+        key = self.profileFieldList[3]
+        value = self.mapImageFrame.getFilePath()
+        stringList.append(value)
+        
+        write_list_meta_file(filePath,self.profileFieldList,stringList)
+        
+        
+        
+    def loadProfile(self=None,filePath=""):
+        print("TODO: make load profile dialog")
+        #This will be result from that file dialog
+        if(filePath == ""):
+            filePath = "C:\Users\Work\Documents\Files\Projects\HarpyEagle\HE_GUI\gui_layer\guiProfiles\sampleData.profile"
+        stringDict = {}
+        for s in self.profileFieldList:
+            stringDict[s]=read_meta_file(filePath,s)
+            
+        #Note: Defaults use relative paths,
+        #none defaults do not
+        curString = stringDict["metaFile"]
+        if (curString != ""):
+            self.selectNewMetaFile(curString)
+            
+        curString = stringDict["irDir"]
+        if (curString != ""):        
+            self.selectNewIRImageDir(curString)
+            
+        curString = stringDict["visDir"]
+        if (curString != ""):  
+            self.selectNewVisImageDir(curString)
+            
+        curString = stringDict["tiffFile"]
+        if (curString != ""):  
+            self.selectNewTiffFile(curString)
+        
     def quit():
         root.destroy()
         

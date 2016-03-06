@@ -48,5 +48,5 @@ class metaDataPanel(tk.Frame):
             i=i+1
         self.textList = data
         self.textObject.config(state='disable')
-        
+    
     

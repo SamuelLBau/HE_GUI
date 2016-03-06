@@ -9,7 +9,6 @@ from ToolTip import *
 #import MetaFileReader
 
 class fileSelectorFrame(tk.Frame):
-    meta_file = "" #This is not really used
     selectBox = 0
     frameTitle = 0
     newFileSelected = 0
@@ -89,10 +88,12 @@ class fileSelectorFrame(tk.Frame):
 
     def clearList(self):
         self.selectBox.delete(0,"end")
-        
-        
+          
     def updateSelection(self,event=None):
         imageID = self.selectBox.curselection()
         imageID = self.selectBox.get(imageID)
         print("Current selection is %s" % (imageID))
         self.newFileSelected(imageID)
+        
+    def getFilePath(self):
+        return self.meta_file

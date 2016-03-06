@@ -7,7 +7,7 @@ from HEdataObject import HEdataObject
 
 
 
-class MetaFileReader():
+class logFileReader():
     npArray = 0
     columnIDs = ["imageID","Altitude","Gps","Speed"]
     def __init__(self,filePath = ""):

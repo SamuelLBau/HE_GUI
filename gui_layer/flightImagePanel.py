@@ -110,3 +110,6 @@ class flightImagePanel(tk.Frame):
     def setupSecondButton(self,text="",func=0):
         self.secondButton = tk.Button(self,text=text,command = func,width=len(text))
         self.secondButton.grid(row=4,column=0) 
+        
+    def getDirectory(self):
+        return self.imageDir
