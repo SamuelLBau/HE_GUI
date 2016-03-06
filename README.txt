@@ -19,7 +19,8 @@ TODO:
 [] use the temp ranges to change image (Eric / someone will write this one)
 
 [X] add profile loading / saving ability
-[X]add dialog for profile saving / loading
+[X] add dialog for profile saving / loading
+[] figure out blocking for the smaller dialogs 
 
 [X] add menu to top level with additional options
-[X] add tool-tips to buttons with current directory
+[X] add tool-tips to buttons with current directoryy
