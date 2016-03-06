@@ -19,4 +19,4 @@ TODO:
 
 [] add profile loading / saving ability
 [] add menu to top level with additional options
-[] add tool-tips to buttons with current directory
+[X] add tool-tips to buttons with current directory
