@@ -3,10 +3,13 @@ import sys
 import os
 from glob import glob
 
+from ToolTip import *
+
 
 #import MetaFileReader
 
 class fileSelectorFrame(tk.Frame):
+    meta_file = "" #This is not really used
     selectBox = 0
     frameTitle = 0
     newFileSelected = 0
@@ -58,7 +61,11 @@ class fileSelectorFrame(tk.Frame):
             self.selectBox.select_set(snum)
             self.updateSelection()
             
-            
+    def setMetaFile(self,dirName):
+        self.meta_file = dirName
+        createToolTip(self.newMetaFileButton,self.meta_file)
+        
+        
     def selectDown(self,event):
         #ERRORCHECK
         snum = self.selectBox.curselection()[0] -1

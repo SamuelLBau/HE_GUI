@@ -138,6 +138,7 @@ class Application(tk.Frame):
         self.metaFileReader.setNewMetaFile(metaFile)
         #imageIDList = self.metaFileReader.getColumn('imageID')
         self.imageListFrame.loadNewImages(self.metaFileReader.getColumn('imageID'))
+        self.imageListFrame.setMetaFile(metaFile)
         
     def createTempRangeDialog(self):
         dialog = temperatureDialog(self,self.changeIRTempRange)

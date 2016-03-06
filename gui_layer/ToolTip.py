@@ -19,7 +19,7 @@ class ToolTip(object):
         #print self.widget.bbox(0)
         #x, y, cx, cy = self.widget.bbox(1)
         #I was getting Nonetype from widget.bbox, so I disabled the tooltip's ability to follow cursor
-        x = self.widget.winfo_rootx() + 27# + x
+        x = self.widget.winfo_rootx()-130# +27 + x #This is hardcoded, should change to be half of TT length
         y = self.widget.winfo_rooty() +27# + y + cy
         self.tipwindow = tw = Toplevel(self.widget)
         tw.wm_overrideredirect(1)
