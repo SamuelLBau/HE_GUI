@@ -16,24 +16,18 @@ class flightImagePanel(tk.Frame):
     defaultImagePath = 0
     imageDirLabel = 0
     imageSuffix = 0
-    imageName = 0
-    imageDir = 0
+    imageName = ""
+    imageDir = ""
     frameTitle = 0
     imageMaxHeight = 600.0
     firstButton = 0
     secondButton = 0
-    def __init__(self,parent,defaultImageName,defaultImageDir,frameTitle,suffix=".png",FB=0,SB=0,FBF=0,SBF=0):
-    #FB = firstButton, generally used for selecting new directory
-    #FBF = FBFunction, command tied to the button
-    #SB = secondButton, currently planning to use as
+    def __init__(self,parent,defaultImagePath,frameTitle,suffix=".png"):
+
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
         
-        self.imageDir = defaultImageDir;
-        self.imageName = defaultImageName
         self.imageSuffix = suffix
-        self.FB = FB
-        self.SB = SB
-        self.defaultImagePath = self.imageDir + self.imageName
+        self.defaultImagePath = defaultImagePath
         
         self.initWidgets(frameTitle)
        
@@ -82,7 +76,6 @@ class flightImagePanel(tk.Frame):
             print("Image too tall, changing max size to %f, image ratio %f" %(self.imageMaxHeight,1/ratio))
             imSize = (int(round(imSize[0] / ratio)),int(self.imageMaxHeight))
         
-        print(imSize)
         image = image.resize(imSize, Image.ANTIALIAS) #TODO: RESIZE THIS
         photo = ImageTk.PhotoImage(image)
         #try:
@@ -108,6 +101,7 @@ class flightImagePanel(tk.Frame):
     
     def setDir(self,dirName):
         self.imageDir = dirName
+        createToolTip(self.firstButton,dirName)
         
     def setupFirstButton(self,text="",func=0):
         self.firstButton = tk.Button(self,text=text,command = func,width=len(text))

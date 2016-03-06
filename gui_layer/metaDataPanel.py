@@ -13,8 +13,8 @@ class metaDataPanel(tk.Frame):
     textObject = 0     #This is the text object
     meta_file = 0
     frameTitleText = 'Meta-Data Display'
-    metaFileFormat = ["VisFileName", "IRFileName"] #This is the value held in each column
-    textList = ["cool", "stuff"]                    #This is each text line
+    metaFileFormat = [] #This is the value held in each column
+    textList = []                    #This is each text line
     def __init__(self,parent):
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
          

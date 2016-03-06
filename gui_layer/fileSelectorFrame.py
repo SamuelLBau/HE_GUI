@@ -3,6 +3,7 @@ import sys
 import os
 from glob import glob
 
+
 #import MetaFileReader
 
 class fileSelectorFrame(tk.Frame):
@@ -17,7 +18,7 @@ class fileSelectorFrame(tk.Frame):
         self.newFileSelected = newFileSelectedFunc
         self.initWidgets()
         self.newMetaFileFunc = selectMetaFileFunc
-        self.loadNewImages(["Temp" , "THING"])
+        self.loadNewImages([])
         
         
         
@@ -30,7 +31,7 @@ class fileSelectorFrame(tk.Frame):
         self.frameTitle.config(state='disable')
         self.frameTitle.grid(row=0,column=0)
         
-        self.newMetaFileButton = tk.Button(self,text="Select Meta File",command=self.newMetaFileFunc)
+        self.newMetaFileButton = tk.Button(self,text="Select Meta File",command=self.internalNewMetaFileFunc)
         self.newMetaFileButton.grid(row=2,column=0,sticky='n')
         
         self.selectBox = tk.Listbox(self)
@@ -44,7 +45,10 @@ class fileSelectorFrame(tk.Frame):
         self.selectBox.bind("<Down>",self.selectUp)
         
     
-
+    def internalNewMetaFileFunc(self):
+        #for some reason it would not link unless I used this intermediate function
+        self.newMetaFileFunc()
+        
         
     def selectUp(self,event):
     #ERRORCHECK
@@ -52,7 +56,7 @@ class fileSelectorFrame(tk.Frame):
         if snum < self.selectBox.size():
             self.selectBox.select_clear(snum-1)
             self.selectBox.select_set(snum)
-            self.updateSelection(event)
+            self.updateSelection()
             
             
     def selectDown(self,event):
@@ -61,7 +65,7 @@ class fileSelectorFrame(tk.Frame):
         if snum >= 0 and snum < self.selectBox.size():
             self.selectBox.select_clear(snum+1)
             self.selectBox.select_set(snum)
-            self.updateSelection(event)
+            self.updateSelection()
             
             
     def loadNewImages(self,imageList):
@@ -71,12 +75,16 @@ class fileSelectorFrame(tk.Frame):
         for s in imageList:
             self.selectBox.insert(i,s)
             i=i+1
+            
+        if( i > 0): #at least one image in group
+            self.selectBox.select_set(0)
+            self.updateSelection()
 
     def clearList(self):
         self.selectBox.delete(0,"end")
         
         
-    def updateSelection(self,evt):
+    def updateSelection(self,event=None):
         imageID = self.selectBox.curselection()
         imageID = self.selectBox.get(imageID)
         print("Current selection is %s" % (imageID))

@@ -29,12 +29,10 @@ class mapPanel(tk.Frame):
         if(not os.path.exists(path)):
             path = self.defaultImagePath
             print("Map not found, loading default image")
-        print("Setting image at path: %s " %(path))
+        print("Setting map image at path: %s " %(path))
         
         self.image = 0        
-        print("Image is 0")
         self.image = Image.open(path)
-        print("Image is loaded")
         #image = image.resize(self.IMSize, Image.ANTIALIAS) #TODO: RESIZE THIS
         self.image = self.image.resize(self.IMSize, Image.ANTIALIAS)
         self.image = ImageTk.PhotoImage(self.image)
@@ -44,13 +42,9 @@ class mapPanel(tk.Frame):
         
 
         dispPath = path.replace("\\","/")
-        print("dispPath = %s" %(dispPath))
         lastIndex = dispPath.rindex('/')
         sLastIndex = dispPath.rindex('/',0,lastIndex-1)
-        print("LastIndex = %d" %(lastIndex))
-        print("sLastIndex = %d" %(sLastIndex))
         dispPath = dispPath[sLastIndex:len(dispPath)]
-        print("dispPath = %s" %(dispPath))
         
         self.imageNameLabel.config(state='normal')
         self.imageNameLabel.delete(1.0, 'end')

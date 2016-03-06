@@ -4,6 +4,8 @@ from PIL import Image, ImageTk
 import os
 import sys
 
+sys.path.append(os.path.join(os.path.dirname(__file__),'..', 'metaReaders'))
+
 from flightImagePanel import flightImagePanel
 from mapPanel import mapPanel
 from metaDataPanel import metaDataPanel
@@ -13,7 +15,8 @@ from logParser import *
 from MetaFileReader import MetaFileReader
 from HEdataObject import HEdataObject
 
-from dirSelectDialog import getDir
+from simpleDialogs import *
+from tempRangeDialog import temperatureDialog
 
 class Application(tk.Frame):
     visImageFrame = 0
@@ -24,24 +27,39 @@ class Application(tk.Frame):
     
     image = 0;
     
-    guiImagePath = os.path.dirname(os.path.realpath(__file__)) + '/guiImages/'
-    defaultTiffDir = os.path.dirname(os.path.realpath(__file__)) + '/defaultTiff/'
-    defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/defaultMetaFile/log.txt'
+    guiImagePath = ""
+    defaultIRImageDir = ""
+    defaultVisImagePath = ""
+    defaultTiffPath = ""
+    defaultMetaFile = ""
     metaFileReader = 0
+    
+    visSuffix = ".png"
+    irSuffix = ".png"
     
     metaFilePath = defaultMetaFile
     
     def __init__(self,master=None):
+        tk.Frame.__init__(self,master,bg='#F0F0F0')
+        self.guiImagePath = os.path.dirname(os.path.realpath(__file__)) + '/res/guiImages/'
+        self.defaultIRImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/ir/"
+        self.defaultVisImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/vis/"
+        self.defaultTiffPath = os.path.dirname(os.path.realpath(__file__)) + '/res/sampleRun/tiff/Belize-map.gif'
+        self.defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/res/sampleRun/logs/log.txt'
+    
         self.guiImagePath = self.guiImagePath.replace("\\","/")
-        self.defaultTiffDir = self.defaultTiffDir.replace("\\","/")
+        self.defaultIRImageDir = self.defaultIRImageDir.replace("\\","/")
+        self.defaultVisImageDir = self.defaultVisImageDir.replace("\\","/")
+        self.defaultTiffPath = self.defaultTiffPath.replace("\\","/")
         self.defaultMetaFile = self.defaultMetaFile.replace("\\","/")
+        
+        
     
         #self.metaFilePath = 
     
       #  self.guiImagePath = os.path.dirname(os.path.realpath(__file__)) + '/guiImages/'
       #  self.defaultTiffDir = os.path.dirname(os.path.realpath(__file__)) + '/defaultTiff/'
       #  self.defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/defaultMetaFile/log.txt'
-        tk.Frame.__init__(self,master,bg='#F0F0F0')
 
         self.metaFileReader = MetaFileReader()
 
@@ -49,20 +67,19 @@ class Application(tk.Frame):
         self.placeFrames()
         self.update()
         
+        self.selectNewIRImageDir(self.defaultIRImageDir)
+        self.selectNewVisImageDir(self.defaultVisImageDir)
         self.selectNewMetaFile(self.defaultMetaFile)
         
         
     def placeFrames(self):
-        visPanelInitImage = 'eagle.jpg'
-        irPanelInitImage = 'eagleBW.jpg'
-        mapPanelInitImage = self.defaultTiffDir + 'Belize-map.gif' #'canyon_grid1_ortho.tiff'
         
         
-        self.visImageFrame = flightImagePanel(self, visPanelInitImage,self.guiImagePath,
-            frameTitle='Visible Image',suffix=".png")
-        self.irImageFrame = flightImagePanel(self, irPanelInitImage,self.guiImagePath,
-            frameTitle='Infra-red image',suffix=".png")
-        self.mapImageFrame = mapPanel(self, mapPanelInitImage)
+        self.visImageFrame = flightImagePanel(self, self.guiImagePath + "eagleT.jpg",
+            frameTitle='Visible Image',suffix=self.visSuffix)
+        self.irImageFrame = flightImagePanel(self, self.guiImagePath + "eagleBWT.jpg",
+            frameTitle='Infra-red image',suffix=self.irSuffix)
+        self.mapImageFrame = mapPanel(self, self.defaultTiffPath)
         self.metaDataFrame = metaDataPanel(self)
         self.imageListFrame = fileSelectorFrame(self,self.newImageSelected,self.selectNewMetaFile)
         
@@ -75,8 +92,9 @@ class Application(tk.Frame):
         self.visImageFrame.setupFirstButton("Select Visible image directory",self.selectNewVisImageDir)
         
         self.irImageFrame.setupFirstButton("Select infra-red image directory",self.selectNewIRImageDir)
-        self.irImageFrame.setupSecondButton("Change temperature Range",self.changeIRTempRange)
-#        
+        self.irImageFrame.setupSecondButton("Change temperature Range",self.createTempRangeDialog)
+       
+
 #    def changeImage(self):
 #        programPath = os.path.dirname(__file__);
 #        self.image = Image.open(imagePath)
@@ -110,27 +128,47 @@ class Application(tk.Frame):
         
 #These functions are related to selecting what data to use
     def selectNewMetaFile(self,metaFile=""):
+        print("new meta file: %s" %(metaFile))
         if(metaFile == ""):
-            metaFile = getDir()
-            if(not os.path.isfile(metaFile)):
-                print("Selection was not a file, cannot read")
-                return
+            metaFile = getFile()
+            
+        if(not os.path.isfile(metaFile)):
+            print("Selection was not a file, cannot read")
+            return    
         self.metaFileReader.setNewMetaFile(metaFile)
         #imageIDList = self.metaFileReader.getColumn('imageID')
         self.imageListFrame.loadNewImages(self.metaFileReader.getColumn('imageID'))
         
-    def changeIRTempRange(self):
-        print("TODO: Make ir image temp range editable")
+    def createTempRangeDialog(self):
+        dialog = temperatureDialog(self,self.changeIRTempRange)
+        dialog.grid()
+    
+    def changeIRTempRange(self,values):
+        lowTemp = values[0]
+        highTemp = values[1]
+        print("Low temp = [%d], HighTemp = [%d]" %(lowTemp,highTemp))
+        
+        print("TODO: Use low and high values to edit IR image")
         
     def selectNewTiffFile(self):
         print("TODO: Make Tiff file selectable, link to a button on mapPanel")
         
-    def selectNewVisImageDir(self):
-        directory = getDir() + '/'
+    def selectNewVisImageDir(self,directory=""):
+        if(directory==""):
+            directory = getDir() + '/'
+        
+        if(not os.path.isdir(directory)):
+            print("Selection was not a directory, cannot read")
+            return          
         self.visImageFrame.setDir(directory)
         
-    def selectNewIRImageDir(self):
-        directory = getDir() + '/'
+    def selectNewIRImageDir(self,directory=""):
+        if(directory==""):
+            directory = getDir() + '/'
+        
+        if(not os.path.isdir(directory)):
+            print("Selection was not a directory, cannot read")
+            return          
         self.irImageFrame.setDir(directory)
         
         

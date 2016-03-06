@@ -16,6 +16,7 @@ class MetaFileReader():
             self.setNewMetaFile(filePath)
         
     def setNewMetaFile(self,filePath):
+        print("New meta file: %s" %(filePath))
         if(not os.path.exists(filePath)):
             print("Log file not found, no valid data imported")
             return
