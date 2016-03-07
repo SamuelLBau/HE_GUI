@@ -76,7 +76,7 @@ class flightImagePanel(tk.Frame):
             print("Image too tall, changing max size to %f, image ratio %f" %(self.imageMaxHeight,1/ratio))
             imSize = (int(round(imSize[0] / ratio)),int(self.imageMaxHeight))
         
-        image = image.resize(imSize, Image.ANTIALIAS) #TODO: RESIZE THIS
+        image = image.resize(imSize, Image.ANTIALIAS)
         photo = ImageTk.PhotoImage(image)
         #try:
         self.image = photo
@@ -101,6 +101,10 @@ class flightImagePanel(tk.Frame):
     
     def setDir(self,dirName):
         self.imageDir = dirName
+        list = glob(dirName+ '*'+self.imageSuffix)
+        for file in list:
+            self.setImage(file)
+            break#Only sets first image, then exits
         createToolTip(self.firstButton,dirName)
         
     def setupFirstButton(self,text="",func=0):

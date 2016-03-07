@@ -2,17 +2,27 @@
 import Tkinter as tk
 import tkFileDialog
 
-def getDir():
+from profileDialogs import saveProfileDialog
+
+def getDir(initialDir=""):
     root = tk.Tk()
     root.withdraw()
-    file_path = tkFileDialog.askdirectory()
+    if(initialDir != ""):
+        file_path = tkFileDialog.askdirectory(initialdir=initialDir)
+    else:
+        file_path = tkFileDialog.askdirectory()
+    root.destroy()
 
     return file_path
 
     
-def getFile():
+def getFile(initialDir=""):
     root = tk.Tk()
     root.withdraw()
-    file_path = tkFileDialog.askopenfilename()
+    if(initialDir != ""):
+        file_path = tkFileDialog.askopenfilename(initialdir=initialDir)
+    else:
+        file_path = tkFileDialog.askopenfilename()
+    root.destroy()
 
     return file_path

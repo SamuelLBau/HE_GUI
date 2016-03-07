@@ -17,9 +17,11 @@ from HEdataObject import HEdataObject
 from access_meta_file import *
 
 from simpleDialogs import *
+from profileDialogs import *
 from tempRangeDialog import temperatureDialog
 
 class mainFrame(tk.Frame):
+    profileDir = 0
     profileFieldList = ["metaFile","irDir","visDir","tiffFile"]
     visImageFrame = 0
     irImageFrame = 0
@@ -43,6 +45,7 @@ class mainFrame(tk.Frame):
     
     def __init__(self,master):
         tk.Frame.__init__(self,master,bg='#F0F0F0')
+        self.profileDir = os.path.dirname(os.path.realpath(__file__)) + '/guiProfiles/'
         self.guiImagePath = os.path.dirname(os.path.realpath(__file__)) + '/res/guiImages/'
         self.defaultIRImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/ir/"
         self.defaultVisImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/vis/"
@@ -141,11 +144,18 @@ class mainFrame(tk.Frame):
         print("TODO: Use low and high values to edit IR image")
         
     def selectNewTiffFile(self,tiffFile=""):
-        print("TODO: Make Tiff file selectable, link to a button on mapPanel")
+        if(tiffFile==""):
+            tiffFile = getFile() + '/'
+            
+        if(not os.path.isfile(tiffFile)):
+            print("Selection was not a file, cannot read")
+            return    
+        
+        self.mapImageFrame.setImage(tiffFile)
         
     def selectNewVisImageDir(self,directory=""):
         if(directory==""):
-            directory = getDir() + '/'
+            directory = getFile()
         
         if(not os.path.isdir(directory)):
             print("Selection was not a directory, cannot read")
@@ -162,10 +172,7 @@ class mainFrame(tk.Frame):
         self.irImageFrame.setDir(directory)
         
     def saveProfile(self=None,filePath=""):
-    
-        print("TODO: Add save profile code:")
         #Assume at this time file either does not exist, or can be overwritten
-        filePath = "C:/Users/Work/Documents/Files/Projects/HarpyEagle/HE_GUI/gui_layer/guiProfiles/newProfile.profile"
         #Make sure this stays same as above
         #profileFieldList = ["metaFile","irDir","visDir","tiffFile"]
         stringList= []
@@ -184,16 +191,21 @@ class mainFrame(tk.Frame):
         key = self.profileFieldList[3]
         value = self.mapImageFrame.getFilePath()
         stringList.append(value)
+
         
-        write_list_meta_file(filePath,self.profileFieldList,stringList)
+        dialog=saveProfileDialog(self.profileDir,self.profileFieldList,stringList)
+        dialog.grab_set()
+        dialog.wait_window(dialog)
+        dialog.grab_release()
+        #write_list_meta_file(filePath,fileA=self.profileFieldList,fieldB=stringList)
         
         
         
     def loadProfile(self=None,filePath=""):
-        print("TODO: make load profile dialog")
         #This will be result from that file dialog
         if(filePath == ""):
-            filePath = "C:\Users\Work\Documents\Files\Projects\HarpyEagle\HE_GUI\gui_layer\guiProfiles\sampleData.profile"
+            filePath = getFile(initialDir=self.profileDir)
+            
         stringDict = {}
         for s in self.profileFieldList:
             stringDict[s]=read_meta_file(filePath,s)

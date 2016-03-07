@@ -9,13 +9,12 @@ from glob import glob
 
 class mapPanel(tk.Frame):
     image = 0 #this is needed to store the image
-    imageFilePath = 0
+    imageFilePath = ""
     imageNameLabel = 0
     defaultImagePath = 0
     IMSize = 190, 270
     def __init__(self,parent,imagePath):
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
-        self.defaultImagePath = imagePath
         self.imageNameLabel = tk.Text(self,height=1,state='disable',bg='#F0F0F0',bd=0,wrap='char',width=20)
         self.imageNameLabel.grid(row=1,column = 0,sticky = 'W')
         
@@ -27,6 +26,9 @@ class mapPanel(tk.Frame):
         
         
     def setImage(self,path):
+    #TODO, add check to see if this image is already loaded, save time re-loading
+        if(path == self.imageFilePath):
+            return
         if(not os.path.exists(path)):
             path = self.defaultImagePath
             print("Map not found, loading default image")
@@ -35,6 +37,7 @@ class mapPanel(tk.Frame):
         
         self.image = 0        
         self.image = Image.open(path)
+        
         #image = image.resize(self.IMSize, Image.ANTIALIAS) #TODO: RESIZE THIS
         self.image = self.image.resize(self.IMSize, Image.ANTIALIAS)
         self.image = ImageTk.PhotoImage(self.image)
