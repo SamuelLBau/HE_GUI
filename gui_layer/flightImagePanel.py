@@ -18,20 +18,25 @@ class flightImagePanel(tk.Frame):
     imageSuffix = 0
     imageName = ""
     imageDir = ""
+    imagePath = ""
     frameTitle = 0
     imageMaxHeight = 600.0
     firstButton = 0
     secondButton = 0
-    def __init__(self,parent,defaultImagePath,frameTitle,suffix=".png"):
+    exportDataButton = 0
+    exportDataFunc = 0
+    def __init__(self,parent,defaultImagePath,frameTitle,exportDataFunc,suffix=".png"):
 
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
         
         self.imageSuffix = suffix
         self.defaultImagePath = defaultImagePath
+        self.exportDataFunc = exportDataFunc
         
         self.initWidgets(frameTitle)
        
         self.setImage(self.defaultImagePath) #NOTE: Later, will take in ID and append suffix
+        
         
     def initWidgets(self,frameTitle):
         
@@ -50,6 +55,8 @@ class flightImagePanel(tk.Frame):
         self.frameTitle.insert('insert',frameTitle)
         self.frameTitle.config(state='disable')
         
+        self.exportDataButton = tk.Button(self,height=1,text="Export data",command=self.exportDataFunc)
+        self.exportDataButton.grid(row=9,column=0)
         
         #if(self.FB != 0)
         #    FB.config(parent=self)
@@ -68,7 +75,7 @@ class flightImagePanel(tk.Frame):
             path = self.defaultImagePath
             print("Image not found, using default image")
         print("Setting image at path: %s " %(path))
-            
+        self.imagePath = path   
         image = Image.open(path)
         imSize= image.size
         if(imSize[1] > self.imageMaxHeight):
@@ -84,10 +91,15 @@ class flightImagePanel(tk.Frame):
         self.imageCanvas.config(width=imSize[0],height=imSize[1])
         self.update()
         
+        #createToolTip(self.imageCanvas,path)
+        
         fullPath = path.replace("\\","/")
         lastIndex = fullPath.rindex('/')
         sLastIndex = fullPath.rindex('/',0,lastIndex-1)
         dispPath = fullPath[lastIndex+1:]
+        
+        #self.imageDir = fullPath[0:lastIndex+1]
+        self.imageName = fullPath[lastIndex:]
         #dispPath = dispPath[sLastIndex:len(dispPath)]
         
         self.imageDirLabel.config(state='normal',width=len(dispPath))
@@ -117,3 +129,9 @@ class flightImagePanel(tk.Frame):
         
     def getDirectory(self):
         return self.imageDir
+    def getImageName(self):
+        return self.imageName
+    def getImageFullPath(self):
+        return self.imagePath
+    def getSuffix(self):
+        return self.imageSuffix

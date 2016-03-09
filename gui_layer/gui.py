@@ -11,6 +11,7 @@ class Application(tk.Toplevel):
     menubar = 0
     profileMenu = 0
     sourceMenu = 0
+    actionMenu = 0
     
     def __init__(self,parent=None):
         tk.Toplevel.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
@@ -36,6 +37,11 @@ class Application(tk.Toplevel):
         self.sourceMenu.add_command(label="Set meta file",command=self.mainFrameI.selectNewMetaFile)
         self.sourceMenu.add_command(label="Set tiff file",command=self.mainFrameI.selectNewTiffFile)
         self.menuBar.add_cascade(label="Sources",menu=self.sourceMenu)
+        
+        self.actionMenu = tk.Menu(self.menuBar,tearoff=0)
+        self.actionMenu.add_command(label="Export current images",command=self.mainFrameI.exportDisplayedData)
+        
+        self.menuBar.add_cascade(label="Actions",menu=self.actionMenu)
         
         self.config(menu=self.menuBar)
         

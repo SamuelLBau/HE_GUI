@@ -3,6 +3,7 @@ class HEdataObject():
     dataDictionary = {}
     def __init__(self,name=""):
         if(name != ""):
+            self.dataDictionary = {}
             self.dataDictionary['ID'] = name
         
     def updateDict(self,key,value):

@@ -9,6 +9,7 @@ from HEdataObject import HEdataObject
 
 class logFileReader():
     npArray = 0
+    meta_file = ""
     columnIDs = ["imageID","Altitude","Gps","Speed"]
     def __init__(self,filePath = ""):
     
@@ -20,9 +21,11 @@ class logFileReader():
         if(not os.path.exists(filePath)):
             print("Log file not found, no valid data imported")
             return
-            
-            
+        self.meta_file = filePath
+        self.npArray=0        
+        self.getColumnIDs()
         self.npArray = np.genfromtxt(filePath, delimiter='|', names=self.columnIDs,dtype=None)
+        self.npArray = np.atleast_1d(self.npArray)
         print("Importing data from metafile : %s" %(filePath))
         #self.npIDColumn = self.npArray["imageID"]
         #print(self.npArray)
@@ -30,6 +33,18 @@ class logFileReader():
         self.getColumnIDS()
 
         
+    def getColumnIDs(self):
+        fo = open(self.meta_file, "r")
+        string=fo.readline()
+        string = string.split('|')
+        length = len(string)
+        self.columnIDs = ["imageID"]
+        i=1
+        while i < length:
+            index = string[i].find('{')
+            curString = string[i][0:index-1]
+            self.columnIDs.append(curString)
+            i=i+1
         
     def getImageRow(self,imageID):
         #Iindex = self.npArray.where(imageID)
@@ -51,7 +66,10 @@ class logFileReader():
         
         
     def getRowIndex(self,index):
-        if(len(self.npArray) > index):
+        print(self.npArray[index])
+        #height = len(np.atleast_2d(self.npArray))
+        height= len(self.npArray)
+        if(height > index):
             return self.npArray[index]
         else:
             return 0 #TODO: Change to return empty stuff
@@ -63,6 +81,7 @@ class logFileReader():
     def getColumnIDS(self):
         #ERRORCHECK
         stringList = self.getRowIndex(0)
+        print(stringList)
         self.columnIDs = ["imageID"]
         length = len(stringList)
         i=1

@@ -3,6 +3,7 @@ import Tkinter as tk
 from PIL import Image, ImageTk
 import os
 import sys
+from shutil import copyfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'..', 'metaReaders'))
 
@@ -19,6 +20,7 @@ from access_meta_file import *
 from simpleDialogs import *
 from profileDialogs import *
 from tempRangeDialog import temperatureDialog
+from doubleImageDialog import doubleImageDialog
 
 class mainFrame(tk.Frame):
     profileDir = 0
@@ -34,6 +36,7 @@ class mainFrame(tk.Frame):
     guiImagePath = ""
     defaultIRImageDir = ""
     defaultVisImagePath = ""
+    defaultIRImagePath = ""
     defaultTiffPath = ""
     defaultMetaFile = ""
     logFileReader = 0
@@ -47,16 +50,20 @@ class mainFrame(tk.Frame):
         tk.Frame.__init__(self,master,bg='#F0F0F0')
         self.profileDir = os.path.dirname(os.path.realpath(__file__)) + '/guiProfiles/'
         self.guiImagePath = os.path.dirname(os.path.realpath(__file__)) + '/res/guiImages/'
-        self.defaultIRImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/ir/"
-        self.defaultVisImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/sampleRun/vis/"
-        self.defaultTiffPath = os.path.dirname(os.path.realpath(__file__)) + '/res/sampleRun/tiff/Belize-map.gif'
-        self.defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/res/sampleRun/logs/log.txt'
+        self.defaultIRImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/guiImages/"
+        self.defaultVisImageDir = os.path.dirname(os.path.realpath(__file__)) + "/res/guiImages/"
+        self.defaultVisImagePath = self.defaultVisImageDir+"eagleT.png"
+        self.defaultIRImagePath = self.defaultIRImageDir + "eagleBWT.png"
+        self.defaultTiffPath = os.path.dirname(os.path.realpath(__file__)) + '/res/guiImages/belizeMap.jpg'
+        self.defaultMetaFile = os.path.dirname(os.path.realpath(__file__)) + '/res/blankLog.txt'
     
         self.guiImagePath = self.guiImagePath.replace("\\","/")
         self.defaultIRImageDir = self.defaultIRImageDir.replace("\\","/")
         self.defaultVisImageDir = self.defaultVisImageDir.replace("\\","/")
         self.defaultTiffPath = self.defaultTiffPath.replace("\\","/")
         self.defaultMetaFile = self.defaultMetaFile.replace("\\","/")
+        
+        
         
         
     
@@ -77,13 +84,17 @@ class mainFrame(tk.Frame):
         self.selectNewMetaFile(self.defaultMetaFile)
         
         
+        #This is placed here to expeditetesting, can freely remove when the opened image panel is successful
+        self.enlargeImages(self.defaultVisImagePath,self.defaultIRImagePath)
+        
+        
     def placeFrames(self):
         
         
         self.visImageFrame = flightImagePanel(self, self.guiImagePath + "eagleT.jpg",
-            frameTitle='Visible Image',suffix=self.visSuffix)
+            frameTitle='Visible Image',exportDataFunc=self.exportDisplayedData,suffix=self.visSuffix)
         self.irImageFrame = flightImagePanel(self, self.guiImagePath + "eagleBWT.jpg",
-            frameTitle='Infra-red image',suffix=self.irSuffix)
+            frameTitle='Infra-red image',exportDataFunc=self.exportDisplayedData,suffix=self.irSuffix)
         self.mapImageFrame = mapPanel(self, self.defaultTiffPath)
         self.metaDataFrame = metaDataPanel(self)
         self.imageListFrame = fileSelectorFrame(self,self.newImageSelected,self.selectNewMetaFile)
@@ -101,7 +112,10 @@ class mainFrame(tk.Frame):
        
 
 
-        
+    def enlargeImages(self,imageAPath,imageBPath):
+        dialog = doubleImageDialog(imageAPath,imageBPath)
+        dialog.grid()
+        #Will need to ensure this is destroyed on close
     def newImageSelected(self,imageID):
         #This function is called by fileSelectorPanel, it updates
         #Each image panel, the metaFile and eventually the geotiff panel
@@ -111,17 +125,59 @@ class mainFrame(tk.Frame):
         self.irImageFrame.findNewImage(imageID)
         
         #This should just be an array of strings, easy to print
-        row = self.logFileReader.getImageRow(imageID)
-        dataObject = logLineParser(row)
+        dataObject = self.getDataObject(imageID)
 
         self.metaDataFrame.loadData(dataObject.printArray())
     
+    def exportDisplayedData(self):
+        #This should save the vis/IR image, the log line, the parsed log data
+        #and maybe the tiff / name of tiff file used
+        
+        #be sure to add code that checks if file exists
+        dirPath = getDir()
+        if(not os.path.isdir(dirPath)):
+            return
+            #TODO:WARNING: Add warning / error message
+            
+        rootDir = getFiletoSave(dirPath)
+        print(rootDir)
+        
+        if(os.path.exists(rootDir)):
+            print("Please select a non-existant directory / file name")
+            return
+        
+        lastIndex = rootDir.rindex('/')
+        rootDirName = rootDir[lastIndex+1:] #The name that should be applied to this sample
+        rootDir = rootDir + '/'
+        
+        print(rootDir)
+        print(rootDirName)
+        print(self.irImageFrame.getSuffix())
+        irImagePath = self.irImageFrame.getImageFullPath()
+        visImagePath = self.visImageFrame.getImageFullPath()
+        imageID = self.imageListFrame.getActiveID()
+        dataObject = self.getDataObject(imageID)
+        logString = self.logFileReader.getImageRow(imageID)#Sent to writer as a list
+        logString = [logLineParserString(logString)]
+        newirImagePath = rootDir +rootDirName+self.irImageFrame.getSuffix()
+        newvisImagePath = rootDir + rootDirName+self.visImageFrame.getSuffix()
+        newlogFileName = rootDir+rootDirName + "_log.txt"
+        newDataFileName = rootDir+rootDirName+"_data.txt"
         
         
+        os.mkdir(rootDir)
+        
+        copyfile(irImagePath,newirImagePath)
+        copyfile(visImagePath,newvisImagePath)
+        
+        print(newlogFileName)
+        print(newDataFileName)
+        
+        write_list_meta_file(newlogFileName,logString)
+        write_list_meta_file(newDataFileName,dataObject.printArray())
         
 #These functions are related to selecting what data to use
     def selectNewMetaFile(self,metaFile=""):
-        print("new meta file: %s" %(metaFile))
         if(metaFile == ""):
             metaFile = getFile()
             
@@ -227,6 +283,11 @@ class mainFrame(tk.Frame):
         curString = stringDict["tiffFile"]
         if (curString != ""):  
             self.selectNewTiffFile(curString)
+            
+    def getDataObject(self,imageID):
+        row = self.logFileReader.getImageRow(imageID)
+        dataObject = logLineParser(row)
+        return dataObject
         
     def quit():
         root.destroy()

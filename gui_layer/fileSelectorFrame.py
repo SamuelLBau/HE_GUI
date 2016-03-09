@@ -14,6 +14,7 @@ class fileSelectorFrame(tk.Frame):
     newFileSelected = 0
     newMetaFileButton = 0
     newMetaFileFunc = 0
+    activeID = 0
     
     def __init__(self,parent,newFileSelectedFunc,selectMetaFileFunc):
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
@@ -92,8 +93,12 @@ class fileSelectorFrame(tk.Frame):
     def updateSelection(self,event=None):
         imageID = self.selectBox.curselection()
         imageID = self.selectBox.get(imageID)
+        self.activeID = imageID
         print("Current selection is %s" % (imageID))
         self.newFileSelected(imageID)
         
     def getFilePath(self):
         return self.meta_file
+    
+    def getActiveID(self):
+        return self.activeID

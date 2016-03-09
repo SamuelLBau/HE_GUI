@@ -8,6 +8,8 @@ def logLineParser(npLine):
     dataString = "ID"
     dataValue = 0
     dataObject = HEdataObject(npLine[0]) # Object has its entry ID as name
+    print("dataObject")
+    print(dataObject.printArray())
     i=1
     while i<numEntries:
         curString = npLine[i]
@@ -48,3 +50,18 @@ def logLineParser(npLine):
         i=i+1
     #close while i<numEntries:
     return dataObject
+    
+def logLineParserString(npRow):
+    numEntries = len(npRow)
+    outString = ""
+    
+    i=0
+    while i < numEntries:
+        curString = npRow[i]
+        outString+= curString + "|"
+        i = i+1
+        
+    if(len(outString) >0):
+        outString = outString[0:len(outString)-1]
+        
+    return outString

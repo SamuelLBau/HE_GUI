@@ -41,6 +41,8 @@ class metaDataPanel(tk.Frame):
         self.textObject.config(state='normal',height=len(data))
         self.textObject.delete(1.0, 'end')
         length = len(data)
+        print("data:")
+        print(data)
         i = 0
         while i < length:
             #print(data[i])
