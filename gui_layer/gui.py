@@ -32,6 +32,7 @@ class Application(tk.Toplevel):
         self.menuBar.add_cascade(label="Profiles",menu=self.profileMenu)
         
         self.sourceMenu = tk.Menu(self.menuBar,tearoff=0)
+        self.sourceMenu.add_command(label="Select data dir.",command=self.mainFrameI.selectRootDir)
         self.sourceMenu.add_command(label="Set Visible dir.",command=self.mainFrameI.selectNewVisImageDir)
         self.sourceMenu.add_command(label="Set IR dir.",command=self.mainFrameI.selectNewIRImageDir)
         self.sourceMenu.add_command(label="Set meta file",command=self.mainFrameI.selectNewMetaFile)

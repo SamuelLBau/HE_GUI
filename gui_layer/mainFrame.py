@@ -22,6 +22,7 @@ from simpleDialogs import *
 from profileDialogs import *
 from tempRangeDialog import temperatureDialog
 from doubleImageDialog import doubleImageDialog
+from loadRootDirDialog import loadRootDirDialog
 
 class mainFrame(tk.Frame):
     profileDir = 0
@@ -42,8 +43,16 @@ class mainFrame(tk.Frame):
     defaultMetaFile = ""
     logFileReader = 0
     
+    
+    #BEGIN CONFIG VARIABLES
+    #These are sent to loadRootDirDialog when loading from root structure
+    irDir = "thermal/"
+    visDir = "visible/"
+    logFile = "log.txt"
+    #These are the expected file extensions for the images
     visSuffix = "_VIS.png"
     irSuffix = "_IR.png"
+    
     
     metaFilePath = defaultMetaFile
     
@@ -198,30 +207,16 @@ class mainFrame(tk.Frame):
         #New dialog that presents each directory, 
         #Asks if you want to load a new tiff file
         #Button to save profileDialogs
-        thermalDir = "thermal"
-        visDir = "visible"
-        meta_file = "log.txt"
+        dialog = loadRootDirDialog(UDL=self.selectNewMetaFile,UDIR=self.selectNewIRImageDir,
+            UDVIS=self.selectNewVisImageDir,UDTIFF=self.selectNewTiffFile,irDirName=self.irDir,
+            visDirName=self.visDir,logFileName=self.logFile)
+            
+        dialog.grid()
         
-        rootDir = getDir()+'/'
-        thermalDir = rootDir + thermalDir
-        visDir = rootDir + visDir
-        meta_file = rootDir + meta_file
-        if(not os.path.isdirectory(rootDir)):
-            #ERRORCHECK / logger / dialog
-            print("Did not find directory")
-            return# Only want to return if rootDir is not selected
-        if(not os.path.isdirectory(thermalDir)):
-            #ERRORCHECK / logger / dialog
-            print("Thermal directory not found")
-            thermalDir = ""
-        if(not os.path.isdirectory(visDir)):
-            #ERRORCHECK / logger / dialog
-            print("Visible directory not found")
-            visDir = ""
-        if(not os.path.isfile(meta_file)):
-            #ERRORCHECK / logger / dialog
-            print("meta_file not found")
-            meta_file = ""
+        dialog.grab_set()
+        dialog.wait_window(dialog)
+        dialog.grab_release()
+        
             
         
         
@@ -241,6 +236,11 @@ class mainFrame(tk.Frame):
     def createTempRangeDialog(self):
         dialog = temperatureDialog(self,self.changeIRTempRange)
         dialog.grid()
+        
+        #This stops rest of program from running until window returns
+        dialog.grab_set()
+        dialog.wait_window(dialog)
+        dialog.grab_release()
     
     def changeIRTempRange(self,values):
         lowTemp = values[0]
