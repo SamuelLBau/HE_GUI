@@ -6,6 +6,7 @@ import sys
 from shutil import copyfile
 
 sys.path.append(os.path.join(os.path.dirname(__file__),'..', 'metaReaders'))
+sys.path.append(os.path.join(os.path.dirname(__file__),'..', 'additionalDialogs'))
 
 from flightImagePanel import flightImagePanel
 from mapPanel import mapPanel
@@ -41,8 +42,8 @@ class mainFrame(tk.Frame):
     defaultMetaFile = ""
     logFileReader = 0
     
-    visSuffix = ".png"
-    irSuffix = ".png"
+    visSuffix = "_VIS.png"
+    irSuffix = "_IR.png"
     
     metaFilePath = defaultMetaFile
     
@@ -181,6 +182,50 @@ class mainFrame(tk.Frame):
         write_list_meta_file(newDataFileName,dataObject.printArray())
         
 #These functions are related to selecting what data to use
+
+
+    def selectRootDir(self):
+        #This funtion selects a new directory,
+        #It expects the following structure:
+        #Rootdir (Any name)
+        #   log.txt
+        #   thermal
+        #       *_ir.png
+        #   visible
+        #       *_vis.png
+        
+        #Need to, set directory, check for those folders
+        #New dialog that presents each directory, 
+        #Asks if you want to load a new tiff file
+        #Button to save profileDialogs
+        thermalDir = "thermal"
+        visDir = "visible"
+        meta_file = "log.txt"
+        
+        rootDir = getDir()+'/'
+        thermalDir = rootDir + thermalDir
+        visDir = rootDir + visDir
+        meta_file = rootDir + meta_file
+        if(not os.path.isdirectory(rootDir)):
+            #ERRORCHECK / logger / dialog
+            print("Did not find directory")
+            return# Only want to return if rootDir is not selected
+        if(not os.path.isdirectory(thermalDir)):
+            #ERRORCHECK / logger / dialog
+            print("Thermal directory not found")
+            thermalDir = ""
+        if(not os.path.isdirectory(visDir)):
+            #ERRORCHECK / logger / dialog
+            print("Visible directory not found")
+            visDir = ""
+        if(not os.path.isfile(meta_file)):
+            #ERRORCHECK / logger / dialog
+            print("meta_file not found")
+            meta_file = ""
+            
+        
+        
+        
     def selectNewMetaFile(self,metaFile=""):
         if(metaFile == ""):
             metaFile = getFile()
@@ -215,7 +260,7 @@ class mainFrame(tk.Frame):
         
     def selectNewVisImageDir(self,directory=""):
         if(directory==""):
-            directory = getFile()
+            directory = getDir() + '/'
         
         if(not os.path.isdir(directory)):
             print("Selection was not a directory, cannot read")
