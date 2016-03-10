@@ -85,7 +85,7 @@ class mainFrame(tk.Frame):
         
         
         #This is placed here to expeditetesting, can freely remove when the opened image panel is successful
-        self.enlargeImages(self.defaultVisImagePath,self.defaultIRImagePath)
+        #self.enlargeImages(self.defaultVisImagePath,self.defaultIRImagePath)
         
         
     def placeFrames(self):
@@ -111,7 +111,11 @@ class mainFrame(tk.Frame):
         self.irImageFrame.setupSecondButton("Change temperature Range",self.createTempRangeDialog)
        
 
-
+    def prepEnlargeImages(self):
+        visImagePath = self.visImageFrame.getImageFullPath()
+        irImagePath = self.irImageFrame.getImageFullPath()
+        self.enlargeImages(visImagePath,irImagePath)
+        
     def enlargeImages(self,imageAPath,imageBPath):
         dialog = doubleImageDialog(imageAPath,imageBPath)
         dialog.grid()

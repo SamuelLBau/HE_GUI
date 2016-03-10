@@ -40,6 +40,8 @@ class Application(tk.Toplevel):
         
         self.actionMenu = tk.Menu(self.menuBar,tearoff=0)
         self.actionMenu.add_command(label="Export current images",command=self.mainFrameI.exportDisplayedData)
+        self.actionMenu.add_command(label="View Enlarged images",command=self.mainFrameI.prepEnlargeImages)
+        self.actionMenu.add_command(label="Change temp. range",command=self.mainFrameI.createTempRangeDialog)
         
         self.menuBar.add_cascade(label="Actions",menu=self.actionMenu)
         

@@ -12,7 +12,7 @@ Library dependancies:
 
 TODO:
 
-[] Make both images pan/zoomable, probably want to link them
+[X] Make both images pan/zoomable, probably want to link them
 [] make tiff importable
 [] draw positions on tiff
 [] tiff pannable and zoomable

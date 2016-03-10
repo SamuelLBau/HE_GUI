@@ -16,6 +16,10 @@ class temperatureDialog(tk.Toplevel):
     lowTempText = 0
     highTempText = 0
     
+    unitsTextValue = u"\u2103"
+    unitsText1 = 0
+    unitsText2 = 0
+    
     lowTempTB = 0
     highTempTB = 0
     
@@ -30,6 +34,9 @@ class temperatureDialog(tk.Toplevel):
         self.updateTempFunc = updateFunc
         tk.Toplevel.__init__(self,bg='#F0F0F0')
         
+        
+        self.unitsText1 = tk.Text(self,width=15,bg='#F0F0F0',height=1,bd=0)
+        self.unitsText2 = tk.Text(self,width=15,bg='#F0F0F0',height=1,bd=0)
         
         self.lowTempTV = tk.StringVar()
         self.lowTempTV.trace("w", lambda name, index, mode,temp=self.lowTempTV.get(): self.changeLowTemp())
@@ -49,6 +56,16 @@ class temperatureDialog(tk.Toplevel):
         self.highTempText.delete(1.0, 'end')
         self.highTempText.insert('insert',"High temperature")
         self.highTempText.config(state='disable')
+        
+        self.unitsText1.config(state='normal',width=len(self.unitsTextValue))
+        self.unitsText1.delete(1.0, 'end')
+        self.unitsText1.insert('insert',self.unitsTextValue)
+        self.unitsText1.config(state='disable')
+        
+        self.unitsText2.config(state='normal',width=len(self.unitsTextValue))
+        self.unitsText2.delete(1.0, 'end')
+        self.unitsText2.insert('insert',self.unitsTextValue)
+        self.unitsText2.config(state='disable')
         
         
         
@@ -76,7 +93,9 @@ class temperatureDialog(tk.Toplevel):
         self.highTempText.grid(row=0,column=1)
         
         self.lowTempTB.grid(row=1,column=0)
+        #self.unitsText1.grid(row=1,column=1)
         self.highTempTB.grid(row=1,column=1)
+        #self.unitsText2.grid(row=1,column=3)
         
         self.lowTempError.grid(row=2,column=0)
         self.highTempError.grid(row=2,column=1)
