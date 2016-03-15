@@ -1,7 +1,9 @@
 class HEdataObject():
     #This is general,  and maintains structure of LOG file
     dataDictionary = {}
-    def __init__(self,name=""):
+    structured = False
+    def __init__(self,name="",structured=False):
+        self.structured = structured
         if(name != ""):
             self.dataDictionary = {}
             self.dataDictionary['ID'] = name
@@ -9,10 +11,16 @@ class HEdataObject():
     def updateDict(self,key,value):
     #to go deeper use format Gps.mPosition.latitude
         key=key.split('.')
-        string = key[1]
-        del key[0]
-       # print("Entering updateDict key = %s value = %s" %(key,value))
-        self.dataDictionary[string] = self.updateSubDict(self.dataDictionary,key,value)
+        if(self.structured):
+            string = key[1]
+            del key[0]
+            #print("Entering updateDict key = %s value = %s, len(key) = %d" %(key,value,len(key)))
+            self.dataDictionary[string] = self.updateSubDict(self.dataDictionary,key,value)
+        else:
+            string = key[len(key)-1]
+            key = [string]
+            self.dataDictionary[string] = value
+        
        # print("Printing dataDictionary")
         #print(self.dataDictionary)
       
@@ -29,6 +37,7 @@ class HEdataObject():
         if(len(key) == 1):
             #print("Adding {%s : %s}" %(key[0] ,value))
             dictionary[key[0]] = value
+           # print(dictionary)
             return
         else:
             if(key[0] in dictionary):
@@ -62,6 +71,7 @@ class HEdataObject():
             printArray.append("%s%s : %s" %(tabList,"ID",dictionary["ID"]))
         #tabList = tabList + '\t'
         for keys,values in dictionary.items():
+            #print("PrintArray keys=%s,values=%s" %(keys,values))
             if type(values) == dict:
                 printArray.append("%s%s :" %(tabList,keys))
                 printArray = self.printValue(values,tabList+'\t',printArray)
@@ -70,3 +80,17 @@ class HEdataObject():
                     printArray.append("%s%s : %s" %(tabList,keys,values))
         
         return printArray
+    def getElem(self,element):
+        if(self.structured):
+            curDict = self.dataDictionary
+            element = element.split('.')
+            while len(element) > 1:
+                curDict = curDict[element[0]]
+                del element[0]
+            return curDict[element[0]]
+        else:
+            return self.dataDictionary[element]
+            
+    def getFullDict(self):
+        return self.dataDictionary
+            

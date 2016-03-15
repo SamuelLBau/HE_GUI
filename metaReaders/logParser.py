@@ -1,15 +1,14 @@
 import numpy as np
 from HEdataObject import HEdataObject
 
-keepLOGStructure = True
 
-def logLineParser(npLine):
+def logLineParser(npLine,structured=False):
     numEntries = len(npLine)
     dataString = "ID"
     dataValue = 0
-    dataObject = HEdataObject(npLine[0]) # Object has its entry ID as name
-    print("dataObject")
-    print(dataObject.printArray())
+    dataObject = HEdataObject(npLine[0],structured=structured) # Object has its entry ID as name
+    #print("dataObject")
+    #print(dataObject.printArray())
     i=1
     while i<numEntries:
         curString = npLine[i]
@@ -28,9 +27,10 @@ def logLineParser(npLine):
             splitString = curSubString.split('=')
             splitString[0] = dataString+'.'+splitString[0].replace("}","").replace("{","")
             splitString[1] = splitString[1].replace("}","")
+            #if(structured):
+            
             dataObject.updateDict(key=splitString[0],value=splitString[1])
-            #print("dataString = %s" %(splitString[0]))
-            #print(splitString[1])
+
             
             CBI = curSubString.find('}')
             while (CBI != -1): #This loop effectively closes braces

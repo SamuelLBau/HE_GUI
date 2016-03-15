@@ -1,0 +1,36 @@
+If think that if the logfile I was reading from was presented like this,
+parts of my job would be easier. I already have a parser working, but if
+data was presented like this I expect I would be better able to use Numpy
+to find / sort / interpret data
+
+row 1:  Column tags, string literals
+row 2:  Data type of each column, string literals
+
+--Since we are taking more thermal images more frequently, I intend to use them as the line ID
+
+--The delimeter may need to be a pipe, if any entries are strings that include commas
+
+--I will need each column tag to be unique, though this should already be case received data
+
+--tabs not necessary in saved version
+
+--since you want a data snapshot for both thermal and visible images,
+    it would be nice if you could have a separate file for visible snapshots and thermal snapshots
+
+thermal-image: Either image ID or full image name, imageName may be better if suffix/extension might change
+visible-image: Either image ID or full image name, imageName may be better if suffix/extension might change
+
+if you go with imageID, maybe add tags like this above the sample
+
+thermal-suffix: _IR.png
+visible-suffix: _VIS.png
+
+example log file:
+
+
+thermal-image               ,visible-image                      ,latitude   ,longitude  ,etc.  ,etc.
+string                      ,string                             ,float      ,float      ,etc.  ,etc.
+20160302_190556_531_IR.png  ,20160302_190556_531_VIS.png        ,89.999     ,-127.000   ,##### ,####
+20160302_190556_532_IR.png  ,20160302_190556_531_VIS.png        ,89.998     ,-127.001   ,##### ,####
+20160302_190556_533_IR.png  ,20160302_190556_532_VIS.png        ,89.997     ,-127.002   ,##### ,####
+20160302_190556_534_IR.png  ,20160302_190556_532_VIS.png        ,89.996     ,-127.003   ,##### ,####

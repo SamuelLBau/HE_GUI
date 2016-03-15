@@ -23,8 +23,12 @@ from profileDialogs import *
 from tempRangeDialog import temperatureDialog
 from doubleImageDialog import doubleImageDialog
 from loadRootDirDialog import loadRootDirDialog
+#from enlargedMapDialog import enlargedMapDialog
 
 class mainFrame(tk.Frame):
+    enableMap = False
+    
+    
     profileDir = 0
     profileFieldList = ["metaFile","irDir","visDir","tiffFile"]
     visImageFrame = 0
@@ -97,13 +101,16 @@ class mainFrame(tk.Frame):
         #This is placed here to expeditetesting, can freely remove when the opened image panel is successful
         #self.enlargeImages(self.defaultVisImagePath,self.defaultIRImagePath)
         
+        #This is used to test the enlargeMapFunction
+        #self.enlargeMap("C:/Users/Work/Documents/Files/Projects/HarpyEagle/HE_GUI/gui_layer/res/sampleRun/tiff/canyon_grid1_ortho.tiff")
+        
         
     def placeFrames(self):
         
         
-        self.visImageFrame = flightImagePanel(self, self.guiImagePath + "eagleT.jpg",
+        self.visImageFrame = flightImagePanel(self, self.guiImagePath + "eagleT_VIS.png",
             frameTitle='Visible Image',exportDataFunc=self.exportDisplayedData,suffix=self.visSuffix)
-        self.irImageFrame = flightImagePanel(self, self.guiImagePath + "eagleBWT.jpg",
+        self.irImageFrame = flightImagePanel(self, self.guiImagePath + "eagleT_IR.png",
             frameTitle='Infra-red image',exportDataFunc=self.exportDisplayedData,suffix=self.irSuffix)
         self.mapImageFrame = mapPanel(self, self.defaultTiffPath)
         self.metaDataFrame = metaDataPanel(self)
@@ -111,9 +118,15 @@ class mainFrame(tk.Frame):
         
         self.visImageFrame.grid(row = 0, column = 0,rowspan=2,sticky='wens')
         self.irImageFrame.grid(row = 0, column = 1,rowspan=2,sticky='wens')
-        self.mapImageFrame.grid(row=0,column = 2,sticky='wens')
-        self.metaDataFrame.grid(row=1,column = 2,sticky='wens')
+        #self.mapImageFrame.grid(row=0,column = 2,sticky='wens')
+        #self.metaDataFrame.grid(row=1,column = 2,sticky='wens')
         self.imageListFrame.grid(row=0,rowspan = 2,column = 3,sticky='wens')
+        
+        if(self.enableMap):
+            self.mapImageFrame.grid(row=0,column = 2,sticky='wens')
+            self.metaDataFrame.grid(row=1,column = 2,sticky='wens')
+        else:
+            self.metaDataFrame.grid(row=0,column = 2,sticky='wens')
         
         self.visImageFrame.setupFirstButton("Select Visible image directory",self.selectNewVisImageDir)
         
@@ -128,6 +141,9 @@ class mainFrame(tk.Frame):
         
     def enlargeImages(self,imageAPath,imageBPath):
         dialog = doubleImageDialog(imageAPath,imageBPath)
+        dialog.grid()
+    def enlargeMap(self,imagePath):
+        dialog = enlargedMapDialog(self,tiffImagePath=imagePath)
         dialog.grid()
         #Will need to ensure this is destroyed on close
     def newImageSelected(self,imageID):
@@ -246,14 +262,15 @@ class mainFrame(tk.Frame):
         lowTemp = values[0]
         highTemp = values[1]
         
-        print("TODO: Use low and high values to edit IR image")
+        print("TODO: Use low [%d] and high [%d] values to edit IR image"%(lowTemp,highTemp))
         
     def selectNewTiffFile(self,tiffFile=""):
         if(tiffFile==""):
-            tiffFile = getFile() + '/'
+            tiffFile = getFile()
             
         if(not os.path.isfile(tiffFile)):
             print("Selection was not a file, cannot read")
+            print("Failed path: %s " %(tiffFile))
             return    
         
         self.mapImageFrame.setImage(tiffFile)
@@ -335,7 +352,7 @@ class mainFrame(tk.Frame):
             
     def getDataObject(self,imageID):
         row = self.logFileReader.getImageRow(imageID)
-        dataObject = logLineParser(row)
+        dataObject = logLineParser(row,structured=True)
         return dataObject
         
     def quit():

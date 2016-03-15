@@ -42,9 +42,10 @@ class logFileReader():
         i=1
         while i < length:
             index = string[i].find('{')
-            curString = string[i][0:index-1]
+            curString = string[i][0:index]
             self.columnIDs.append(curString)
             i=i+1
+        return self.columnIDs
         
     def getImageRow(self,imageID):
         #Iindex = self.npArray.where(imageID)
@@ -66,7 +67,7 @@ class logFileReader():
         
         
     def getRowIndex(self,index):
-        print(self.npArray[index])
+        #print(self.npArray[index])
         #height = len(np.atleast_2d(self.npArray))
         height= len(self.npArray)
         if(height > index):
@@ -81,7 +82,7 @@ class logFileReader():
     def getColumnIDS(self):
         #ERRORCHECK
         stringList = self.getRowIndex(0)
-        print(stringList)
+        #print(stringList)
         self.columnIDs = ["imageID"]
         length = len(stringList)
         i=1

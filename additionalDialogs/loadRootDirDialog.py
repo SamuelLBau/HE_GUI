@@ -187,7 +187,7 @@ class loadRootDirDialog(tk.Toplevel):
         if(path == ""):
             path = getFile()
             
-        if(not os.path.isdir(path) or path == "NULL"):
+        if(not os.path.isfile(path) or path == "NULL"):
             #ERRORCHECK
             self.tiffFilePath = "NULL"
             self.changeText(self.tiffPathText,"NULL")

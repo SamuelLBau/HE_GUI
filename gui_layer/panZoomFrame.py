@@ -62,12 +62,16 @@ class panZoomFrame(tk.Frame):
     #Load image should just load the image into memory, it will not resize it,
     #resizing and checks will be done by display
         path = self.imagePath
-        if(not os.path.exists(path)):
+        if(not os.path.isfile(path)):
             print("Failed to set image at path: %s " %(path))
             path = self.defaultImagePath
             print("Image not found, using default image")
         print("Setting image at path: %s " %(path))
-        
+        try:       
+            self.image = Image.open(path)
+        except(IOError):
+            print("Error loading image")
+            return
         self.imagePath = path  
         print("image path = %s" %(self.imagePath) )       
         self.originalImage = Image.open(self.imagePath)
