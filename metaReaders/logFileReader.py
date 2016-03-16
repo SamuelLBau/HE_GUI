@@ -11,7 +11,7 @@ class logFileReader():
     npArray = 0
     meta_file = ""
     columnIDs = ["imageID","Altitude","Gps","Speed"]
-    def __init__(self,filePath = ""):
+    def __init__(self=None,filePath = ""):
     
         if(os.path.exists(filePath)):
             self.setNewMetaFile(filePath)
@@ -33,7 +33,7 @@ class logFileReader():
         self.getColumnIDS()
 
         
-    def getColumnIDs(self):
+    def getColumnIDs(self=None):
         fo = open(self.meta_file, "r")
         string=fo.readline()
         string = string.split('|')
@@ -47,7 +47,7 @@ class logFileReader():
             i=i+1
         return self.columnIDs
         
-    def getImageRow(self,imageID):
+    def getImageRow(self=None,imageID=""):
         #Iindex = self.npArray.where(imageID)
         #print("numpyindex = ")
         #print(index)
@@ -66,7 +66,7 @@ class logFileReader():
         return self.getRowIndex(index) 
         
         
-    def getRowIndex(self,index):
+    def getRowIndex(self=None,index=""):
         #print(self.npArray[index])
         #height = len(np.atleast_2d(self.npArray))
         height= len(self.npArray)
@@ -76,10 +76,10 @@ class logFileReader():
             return 0 #TODO: Change to return empty stuff
             
             
-    def getColumn(self,columnID):
+    def getColumn(self=None,columnID=""):
         return self.npArray[columnID]
         
-    def getColumnIDS(self):
+    def getColumnIDS(self=None):
         #ERRORCHECK
         stringList = self.getRowIndex(0)
         #print(stringList)
@@ -91,5 +91,7 @@ class logFileReader():
             firstBracketIndex = string.find('{')
             self.columnIDs.append(string[0:firstBracketIndex])
             i=i+1
+            
+            
 
         

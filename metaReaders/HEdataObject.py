@@ -1,11 +1,13 @@
+from collections import OrderedDict
+
 class HEdataObject():
     #This is general,  and maintains structure of LOG file
-    dataDictionary = {}
+    dataDictionary = OrderedDict([])
     structured = False
     def __init__(self,name="",structured=False):
         self.structured = structured
         if(name != ""):
-            self.dataDictionary = {}
+            self.dataDictionary = OrderedDict([])
             self.dataDictionary['ID'] = name
         
     def updateDict(self,key,value):
@@ -26,7 +28,7 @@ class HEdataObject():
       
     def clearDict(self):
         del self.dataDictionary
-        self.dataDictionary = {'Name': 0}
+        self.dataDictionary = OrderedDict([])
     
     def removeElem(self,key):
         del self.dataDictionary[key]
@@ -93,4 +95,13 @@ class HEdataObject():
             
     def getFullDict(self):
         return self.dataDictionary
+    
+    def getDictAsList(self):
+        
+        outList = []
+        
+        for keys,values in self.dataDictionary.items():
+            outList.append(values)
+        return outList
+        
             

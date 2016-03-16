@@ -79,3 +79,6 @@ print("structGroundSpeed = %s" %(structGroundSpeed))
 print("latitude = %s" %(structLatitude))
 print("longitude = %s" %(structLongitude))
 print(structFullDictionary)
+
+print("Struct ColumnIDs")
+print(LFR.getColumnIDs())

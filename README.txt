@@ -4,18 +4,21 @@ This is the GUI for Harpy Eagles, it is programmed with the following:
 OS: Windows 10
 Version: Python 2.7
 
-Library dependancies:
+Library dependancies: (See installer)
 -Pillow
 -numpy
--scipy-0.17.0 (image rotation)
+-Matplotlib
 
 
+X - Done
+Y - Put off to later
 TODO:
 
 [X] Make both images pan/zoomable, probably want to link them
-[] make tiff importable
-[] draw positions on tiff
-[] tiff pannable and zoomable
+[Y] make tiff importable
+[Y] draw positions on tiff
+[Y] tiff pannable and zoomable
+[] Add integration to QGIS before deployment
 
 [X] make extra dialog for temperature range
 [] use the temp ranges to change image (Eric / someone will write this one)
@@ -26,4 +29,12 @@ TODO:
 [X] figure out blocking for the smaller dialogs 
 
 [X] add menu to top level with additional options
-[X] add tool-tips to buttons with current directoryy
+[X] add tool-tips to buttons with current directory
+
+[] Add button to zoomable images to select next ir / vis image
+[] Add meta_file panel to separate IR / VIS files
+[] Write parser to handle CSV file
+
+
+
+[]TESTING TESTING TESTING
