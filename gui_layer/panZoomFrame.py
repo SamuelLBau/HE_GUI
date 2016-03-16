@@ -5,9 +5,9 @@ import sys
 #import scipy
 #from scipy import ndimage
 from PIL import Image, ImageTk
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
-import gdal
+#import gdal
 
 
 class panZoomFrame(tk.Frame):
