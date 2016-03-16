@@ -3,7 +3,7 @@ import os
 import sys
 
 from simpleDialogs import *
-    
+#This dialog is used to select a root directory, instead of independantly selecting them
 class loadRootDirDialog(tk.Toplevel):
     irDirName = ""
     visDirName=""
