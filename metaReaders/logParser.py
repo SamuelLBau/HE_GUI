@@ -46,7 +46,8 @@ def logLineParser(npLine,structured=False):
         #close while j < numSubEntries:         
                 #There is a curly brace in here
         if(dataString != "ID"):
-            print("ERROR IN PARSING, UNMATCHED BRACES")
+            #TODO LOGGER
+            print("ERROR: ISSUE DURING LOG PARSING, UNMATCHED BRACES")
         i=i+1
     #close while i<numEntries:
     return dataObject

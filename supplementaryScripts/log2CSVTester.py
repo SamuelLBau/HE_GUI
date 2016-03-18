@@ -10,4 +10,4 @@ visCSV = os.path.join(os.path.dirname(__file__),"visParsed.csv")
 
 print("IR log: %s" %(irLog))
 
-log2CSV(irLog,visLog,irCSV,visCSV)
+log2CSV(irLog,visLog,irCSV,visCSV,overwrite=True)

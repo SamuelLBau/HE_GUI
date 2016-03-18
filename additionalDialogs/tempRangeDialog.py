@@ -75,14 +75,14 @@ class temperatureDialog(tk.Toplevel):
         self.lowTempError = tk.Text(self,width=15,bg='#F0F0F0',fg='#F0F0F0',height=1,bd=0)
         self.highTempError = tk.Text(self,width=15,bg='#F0F0F0',fg='#F0F0F0',height=1,bd=0)
         
-        self.lowTempError.config(state='normal',width=len("Value must be integer"))
+        self.lowTempError.config(state='normal',width=len("Value must be float"))
         self.lowTempError.delete(1.0, 'end')
-        self.lowTempError.insert('insert',"Value must be integer")
+        self.lowTempError.insert('insert',"Value must be float")
         self.lowTempError.config(state='disable')
         
-        self.highTempError.config(state='normal',width=len("Value must be integer"))
+        self.highTempError.config(state='normal',width=len("Value must be float"))
         self.highTempError.delete(1.0, 'end')
-        self.highTempError.insert('insert',"Value must be integer")
+        self.highTempError.insert('insert',"Value must be float")
         self.highTempError.config(state='disable')
         
         self.submitButton = tk.Button(self,text="Enter",command=self.submitNumbers)
@@ -142,7 +142,7 @@ class temperatureDialog(tk.Toplevel):
             
     def checkTemp(self,temp):
         try:
-            temp = int(temp)
+            temp = float(temp)
         except ValueError:
             temp = self.invalidTemp
             

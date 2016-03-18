@@ -27,16 +27,17 @@ class Application(tk.Toplevel):
         
         
         self.profileMenu = tk.Menu(self.menuBar,tearoff=0)
-        self.profileMenu.add_command(label="Save current Profile",command=self.saveProfile)
-        self.profileMenu.add_command(label="Load a profile",command=self.loadProfile)
+        self.profileMenu.add_command(label="Save current Profile",command=self.mainFrameI.saveProfile)
+        self.profileMenu.add_command(label="Load a profile",command=self.mainFrameI.loadProfile)
         self.menuBar.add_cascade(label="Profiles",menu=self.profileMenu)
         
         self.sourceMenu = tk.Menu(self.menuBar,tearoff=0)
         self.sourceMenu.add_command(label="Select data dir.",command=self.mainFrameI.selectRootDir)
         self.sourceMenu.add_command(label="Set Visible dir.",command=self.mainFrameI.selectNewVisImageDir)
         self.sourceMenu.add_command(label="Set IR dir.",command=self.mainFrameI.selectNewIRImageDir)
-        self.sourceMenu.add_command(label="Set meta file",command=self.mainFrameI.selectNewMetaFile)
-        self.sourceMenu.add_command(label="Set tiff file",command=self.mainFrameI.selectNewTiffFile)
+        self.sourceMenu.add_command(label="Set ir log file",command=self.loadIRlogFile)
+        self.sourceMenu.add_command(label="Set vis log file",command=self.loadVISlogFile)
+        #self.sourceMenu.add_command(label="Set tiff file",command=self.mainFrameI.selectNewTiffFile)
         self.menuBar.add_cascade(label="Sources",menu=self.sourceMenu)
         
         self.actionMenu = tk.Menu(self.menuBar,tearoff=0)
@@ -48,17 +49,12 @@ class Application(tk.Toplevel):
         
         self.config(menu=self.menuBar)
         
+    def loadIRlogFile(self):
+        self.mainFrameI.selectNewLogFile(source=self.mainFrameI.irID)
         
-    def saveProfile(self):
-        self.mainFrameI.saveProfile()
-        
-    def loadProfile(self):
-        self.mainFrameI.loadProfile()
-        
-        
-        
-    def temp(self):   
-        print("TODO: Add stuff")
+    def loadVISlogFile(self):
+        self.mainFrameI.selectNewLogFile(source=self.mainFrameI.visID)
+
     
     
     

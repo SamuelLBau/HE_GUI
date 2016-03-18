@@ -42,9 +42,15 @@ class panZoomFrame(tk.Frame):
     panLeftButton=0
     panRightButton=0
     resetButton = 0
+    prevImageButton = 0
+    nextImageButton = 0
     
     updateTopFrameFunc = 0
-    def __init__(self,master,imagePath,updateFunc=0):
+    prevItemFunc = 0
+    nextItemFunc = 0
+    def __init__(self,master,imagePath,updateFunc=0,PIC=0,NIC=0):
+        self.prevItemFunc = PIC
+        self.nextItemFunc = NIC
         tk.Frame.__init__(self,master,bg='#F0F0F0')
         self.imagePath = imagePath
         self.updateTopFrameFunc = updateFunc
@@ -156,6 +162,9 @@ class panZoomFrame(tk.Frame):
         self.resetButton = tk.Button(self,text="Reset",command=self.resetImage)
         
         self.imagesLinkedButton = tk.Button(self,text="Images Not Linked",command=self.changeLinked)
+        
+        self.prevImageButton = tk.Button(self,text="Previous image",command=self.prevItemFunc)
+        self.nextImageButton = tk.Button(self,text="Next image",command=self.nextItemFunc)
     def placeWidgets(self):
         #See notebook for designplan
         self.mainCanvas.grid(row=0,column=0,columnspan = 20,sticky='wens')
@@ -172,6 +181,11 @@ class panZoomFrame(tk.Frame):
         self.panRightButton.grid(row=2,column=3,sticky='we')
         
         self.resetButton.grid(row=2,column=2,sticky='we')
+        
+        if(prevItemFunc != 0):
+            self.prevImageButton.grid(row=1,column=4,sticky='we')
+        if(nextItemFunc != 0):
+            self.nextImageButton.grid(row=3,column=4,sticky='we')
         
     def resetImage(self,update=True):
         self.zoomFactor = 1

@@ -17,13 +17,20 @@ from logFileReader import logFileReader
 from logParser import *
 
 
-def log2CSV(irLogPath,visLogPath,irCSVPath,visCSVPath):
-
+def log2CSV(irLogPath,visLogPath,irCSVPath,visCSVPath,overwrite=False):
+    print("Inside log2CSV")
+    print("irLogPath: %s" %(irLogPath))
+    print("visLogPath: %s" %(visLogPath))
+    print("irCSVPath: %s" %(irCSVPath))
+    print("visCSVPath: %s" %(visCSVPath))
+    #TODO LOGGER
+    #print("Entering log2CSV")
     continueConversion = checkFiles(irLogPath,visLogPath,irCSVPath,visCSVPath)
     #This requires that the names of the files be pre-determined
         
     if(not continueConversion):
-        print("Skipping log2CSV")
+        #TODO LOGGER
+        print("NOTE: Skipping log2CSV")
         return -1
         
         
@@ -36,7 +43,6 @@ def log2CSV(irLogPath,visLogPath,irCSVPath,visCSVPath):
     #visPairs is the closest irImage for each vis image
     irPairs = associateIDs(irNumpy,visNumpy)
     visPairs = associateIDs(visNumpy,irNumpy)
-    print("TODO: Test for accuracy here, make sure it finds closest pairs")
     
     writeData(irCSVPath,irNumpy,irPairs,irColumnIDs,irDataTypes)
     writeData(visCSVPath,visNumpy,visPairs,visColumnIDs,visDataTypes)
@@ -44,14 +50,25 @@ def log2CSV(irLogPath,visLogPath,irCSVPath,visCSVPath):
     #for length idColumn
     # write(irPair[i][0]+','+ irPair[i][1] + irNumpy[i][EACHITEMAFTER2])
     
+    
 def writeData(saveFile,dataNumpy,dataPair,columnIDs,dataTypes):
+    
+    s = saveFile.split('.')
+    length2 = len(s)
+        
+    
+    lengthcolumnIDs = len(columnIDs)
+    lengthDataTypes = len(dataTypes)
+    
+    columnIDs.insert(1,"matchedID")
+    dataTypes.insert(1,"string")
     
     #This segment writes first two rows
     file = open(saveFile,'w')
     i = 0
     
     #Consider r
-    while i < len(columnIDs):
+    while i < len(columnIDs): #-1 is necessary because I inserted the matchedID value
         writeString = columnIDs[i]
         if(i != len(columnIDs)-1):
             writeString = writeString+','
@@ -60,7 +77,7 @@ def writeData(saveFile,dataNumpy,dataPair,columnIDs,dataTypes):
     file.write('\n')
     
     i = 0
-    while i < len(dataTypes):
+    while i < len(dataTypes): #-1 is necessary because I inserted the string value
         writeString = dataTypes[i]
         if(i != len(dataTypes)-1):
             writeString = writeString+','
@@ -69,7 +86,7 @@ def writeData(saveFile,dataNumpy,dataPair,columnIDs,dataTypes):
     file.write('\n')
 
     matrixHeight = len(dataNumpy[:,0])
-    matrixWidth = len(columnIDs)
+    matrixWidth = lengthcolumnIDs #-1 is necessary because I inserted the matchedID value
     
     i = 0
     while i < matrixHeight:
@@ -87,17 +104,25 @@ def writeData(saveFile,dataNumpy,dataPair,columnIDs,dataTypes):
    
 def checkFiles(irLogPath,visLogPath,irCSVPath,visCSVPath):
     continueConversion = True
+    print("irLogPath %s"%(irLogPath))
+    print("visLogPath %s"%(visLogPath))
+    print("irCSVPath %s"%(irCSVPath))
+    print("visCSVPath %s"%(visCSVPath))
     if(not os.path.isfile(irLogPath)):
-        print("IR LOG file not found")
+        #TODO LOGGER
+        print("WARNING: IR LOG file not found")
         continueConversion = False
     if(not os.path.isfile(visLogPath)):
-        print("VISIBLE LOG file not found")
+        #TODO LOGGER
+        print("WARNING: VISIBLE LOG file not found")
         continueConversion = False
     if(os.path.exists(irCSVPath)):
-        print("IR CSV already exists")
+        #TODO LOGGER
+        print("NOTE: IR CSV already exists, overwritting")
         #continueConversion = False
     if(os.path.exists(visCSVPath)):
-        print("VISIBLE CSV file already exists")
+        #TODO LOGGER
+        print("NOTE: VISIBLE CSV file already exists,overwritting")
         #continueConversion = False 
 
     return continueConversion
@@ -119,9 +144,9 @@ def associateIDs(numpyA, numpyB):
                 bIndex = bIndex+1
                 if(bIndex == Blength - 1):
                     break
-            
+        #print("Time A %s, Time B %s" %(aColumn[i],bColumn[bIndex]))
+        #print("Pair %d, %d" %(timeBetween(aColumn[i],bColumn[bIndex]),timeBetween(aColumn[i],bColumn[bIndex+1])))    
         outPairList.append([aColumn[i],bColumn[bIndex]])
-        print(outPairList[i])
     
         i=i+1
     return outPairList
@@ -155,35 +180,18 @@ def loadLog(logPath):
     numCols = len(columnIDs)
     i=0
     
-    #Top of array is still strings
-    #print(tupleList)
-    #print(columnIDs)
-    #outNP = np.array([columnIDs])
-    #print("Before looping, outNP array")
-    #print(outNP)
-    
     i = 1
     while i < numEntries:
         #This loops for every row in the log file
         row = LFR.getImageRow(IDList[i])
         curData = logLineParser(row,structured=False) #Type is HE object
         curData = tuple(curData.getDictAsList()) #Converted to a list
-        #print(len(curData))
-        #print("curData: ")
-        #print(curData)
-        #print("OUT NP = ")
-        #print(outNP)
         outNP = np.vstack([outNP,curData])
-        #outNP = np.vstack([outNP,curData])
-        #print("OUT NP = ")
-       # print(outNP)
         
         #curData = logLineParser(curData,structured=False)
         
         
         i=i+1
-    
-    #print(outNP)
     return [outNP, columnIDs,dataTypes]
   
 def getDataType(value):
@@ -213,13 +221,16 @@ def timeBetween(timeA,timeB):
 def time2int(value):
     #Assumes format: yyyyMMdd_HHmmss_sss
     #print("TODO: Convert string to an integer")
-    year = int(value[0:3])
-    month = int(value[4:5])
-    day = int(value[6:7])
-    hour = int(value[9:10])
-    minute = int(value[11:12])
-    second = int(value[13:14])
-    millisecond = int(value[16:18])
+    year = long(value[0:4])
+    month = long(value[4:6])
+    day = long(value[6:8])
+    hour = long(value[9:11])
+    minute = long(value[11:13])
+    second = long(value[13:15])
+    millisecond = long(value[16:19])
+    #print("Value: %s"%(value))
+    
+    
     
     outVal = year
     outVal = outVal * 12 + month
@@ -228,6 +239,32 @@ def time2int(value):
     outVal = outVal * 60 + minute
     outVal = outVal * 60 + second
     outVal = outVal * 1000 + millisecond
+    
+    #if(millisecond == 61 or millisecond == 966 or millisecond == 899):
+        #print("Value: %s"%(value))
+        #print("SYear = %s"%(value[0:4]))
+        #print("Smonth = %s"%(value[4:6]))
+        #print("Sday = %s"%(value[6:8]))
+        #print("Shour = %s"%(value[9:11]))
+        #print("Sminute = %s"%(value[11:13]))
+        #print("Ssecond = %s"%(value[13:15]))
+        #print("Smillisecond = %s"%(value[16:19]))
+        
+        
+        
+        
+        
+        
+        #print("Value: %s"%(value))
+        #print("year: %d"%(year))
+        #print("month: %d"%(month))
+        #print("day: %d"%(day))
+        #print("hour: %d"%(hour))
+        #print("minute: %d"%(minute))
+        #print("second: %d"%(second))
+        #print("millisecond: %d"%(millisecond))
+        #print("Outval = %d" %(outVal))
+        #input("Pausing to read")
     
     return outVal
     

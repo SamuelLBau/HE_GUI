@@ -27,6 +27,7 @@ class saveProfileDialog(tk.Toplevel):
     
     stringList = []
     def formatStrings(self,tags,values):
+        self.stringList = []
         length = len(tags)
         if( length > len(values)):
             length = len(values)
@@ -35,10 +36,13 @@ class saveProfileDialog(tk.Toplevel):
         while i < length:
             self.stringList.append(tags[i] +"| " + values[i])
             i=i+1
+        #TODO LOGGER    
+        #print("PRINTING STRINGLIST")
+        #print(self.stringList)
      
         
     def __init__(self,dirPath,tags,values):
-    
+        print("CREATING SAVEPROFILE")
         tk.Toplevel.__init__(self,bg='#F0F0F0')
         self.title("Save Profile")
         self.dirPath = dirPath

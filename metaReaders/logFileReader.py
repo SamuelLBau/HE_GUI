@@ -17,16 +17,20 @@ class logFileReader():
             self.setNewMetaFile(filePath)
         
     def setNewMetaFile(self,filePath):
-        print("New meta file: %s" %(filePath))
+        #TODO LOGGER
+        #print("NOTE: New meta file: %s" %(filePath))
         if(not os.path.exists(filePath)):
-            print("Log file not found, no valid data imported")
+            #TODO LOGGER
+            print("WARNING: Log file not found, no valid data imported")
+            print("NOTE: Invalid log path: %s"%(filePath))
             return
         self.meta_file = filePath
         self.npArray=0        
         self.getColumnIDs()
         self.npArray = np.genfromtxt(filePath, delimiter='|', names=self.columnIDs,dtype=None)
         self.npArray = np.atleast_1d(self.npArray)
-        print("Importing data from metafile : %s" %(filePath))
+        #TODO LOGGER
+        print("NOTE: Importing data from metafile: %s" %(filePath))
         #self.npIDColumn = self.npArray["imageID"]
         #print(self.npArray)
         

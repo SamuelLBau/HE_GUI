@@ -16,7 +16,8 @@ def write_list_meta_file(filename,tags,values=[]):
         with open(filename,"w") as file:
             i=0
             while i < len(tags):
-                print("tags[%d] = %s, value[%d] = %s" %(i,tags[i],i,values[i]))
+                #TODO LOGGER
+                #print("tags[%d] = %s, value[%d] = %s" %(i,tags[i],i,values[i]))
                 file.write(tags[i] + "| " + values[i]+'\n')
                 i=i+1
     else:

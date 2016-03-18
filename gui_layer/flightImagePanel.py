@@ -11,6 +11,10 @@ from glob import glob
 
 
 class flightImagePanel(tk.Frame):
+    dynFindSuffix = False
+    imageExtensionList = ["jpg","jpeg","bmp","png"] 
+
+
     image = 0 #this is needed to store the image\
     pathToolTip = 0
     defaultImagePath = 0
@@ -21,6 +25,7 @@ class flightImagePanel(tk.Frame):
     imagePath = ""
     frameTitle = 0
     imageMaxHeight = 600.0
+    imageMaxWidth = 600.0
     firstButton = 0
     secondButton = 0
     exportDataButton = 0
@@ -71,19 +76,21 @@ class flightImagePanel(tk.Frame):
         
     def setImage(self,path):
         if(not os.path.exists(path)):
-            print("Failed to set image at path: %s " %(path))
+            #TODO LOGGER
+            print("WARNING: Failed to set image at path: %s " %(path))
             path = self.defaultImagePath
-            print("Image not found, using default image")
-        print("Setting image at path: %s " %(path))
+            print("NOTE: Image not found, using default image")
+        #TODO LOGGER
+        #print("Setting image at path: %s " %(path))
         self.imagePath = path   
         image = Image.open(path)
         imSize= image.size
         if(imSize[1] > self.imageMaxHeight):
             ratio = imSize[1] / self.imageMaxHeight
-            print("Image too tall, changing max size to %f, image ratio %f" %(self.imageMaxHeight,1/ratio))
+            #TODO LOGGER
+            print("NOTE: Image too tall, changing max size to %f, image ratio %f" %(self.imageMaxHeight,1/ratio))
             imSize = (int(round(imSize[0] / ratio)),int(self.imageMaxHeight))
-        
-        image = image.resize(imSize, Image.ANTIALIAS)
+            image = image.resize(imSize)
         photo = ImageTk.PhotoImage(image)
         #try:
         self.image = photo
@@ -92,7 +99,6 @@ class flightImagePanel(tk.Frame):
         self.update()
         
         #createToolTip(self.imageCanvas,path)
-        
         fullPath = path.replace("\\","/")
         lastIndex = fullPath.rindex('/')
         sLastIndex = fullPath.rindex('/',0,lastIndex-1)
@@ -113,6 +119,11 @@ class flightImagePanel(tk.Frame):
     
     def setDir(self,dirName):
         self.imageDir = dirName
+        
+        if(self.dynFindSuffix):
+            extension = self.findNewSuffix(dirName)
+            self.imageSuffix = self.imageSuffix.split[0] + '.' + extension
+            
         list = glob(dirName+ '*'+self.imageSuffix)
         for file in list:
             self.setImage(file)
@@ -135,3 +146,14 @@ class flightImagePanel(tk.Frame):
         return self.imagePath
     def getSuffix(self):
         return self.imageSuffix
+    def findNewSuffix(self,dirName):
+        list = glob(dirName+ '*')
+        for s in list:
+            s = s.split('.')
+            length = len(s)
+            extension = s[length-1]
+            if(extension in self.imageExtensionList):
+                return extension
+         
+        #This is only reached if a valid suffix is not found
+        return self.imageSuffix.split('.')[1]

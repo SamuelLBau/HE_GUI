@@ -6,21 +6,24 @@ from glob import glob
 from ToolTip import *
 
 
-#import MetaFileReader
 
 class fileSelectorFrame(tk.Frame):
     selectBox = 0
     frameTitle = 0
     newFileSelected = 0
-    newMetaFileButton = 0
-    newMetaFileFunc = 0
+    newLogFileButton = 0
+    newLogFileFunc = 0
     activeID = 0
     
-    def __init__(self,parent,newFileSelectedFunc,selectMetaFileFunc):
+    frameID = "" #should either be IR or VIS
+    log_file = ""
+    
+    def __init__(self,parent,newFileSelectedFunc,selectLogFileFunc,ID=""):
         tk.Frame.__init__(self,parent,bg='#F0F0F0',bd=1,relief='sunken')
+        self.frameID = ID
         self.newFileSelected = newFileSelectedFunc
         self.initWidgets()
-        self.newMetaFileFunc = selectMetaFileFunc
+        self.newLogFileFunc = selectLogFileFunc
         self.loadNewImages([])
         
         
@@ -34,8 +37,8 @@ class fileSelectorFrame(tk.Frame):
         self.frameTitle.config(state='disable')
         self.frameTitle.grid(row=0,column=0)
         
-        self.newMetaFileButton = tk.Button(self,text="Select Meta File",command=self.internalNewMetaFileFunc)
-        self.newMetaFileButton.grid(row=2,column=0,sticky='n')
+        self.newLogFileButton = tk.Button(self,text="Select Log File",command=self.internalNewLogFileFunc)
+        self.newLogFileButton.grid(row=2,column=0,sticky='n')
         
         self.selectBox = tk.Listbox(self)
         self.selectBox.grid_rowconfigure(2,weight=1)
@@ -48,9 +51,9 @@ class fileSelectorFrame(tk.Frame):
         self.selectBox.bind("<Down>",self.selectUp)
         
     
-    def internalNewMetaFileFunc(self):
+    def internalNewLogFileFunc(self):
         #for some reason it would not link unless I used this intermediate function
-        self.newMetaFileFunc()
+        self.newLogFileFunc(self.frameID)
         
         
     def selectUp(self,event):
@@ -61,9 +64,9 @@ class fileSelectorFrame(tk.Frame):
             self.selectBox.select_set(snum)
             self.updateSelection()
             
-    def setMetaFile(self,dirName):
-        self.meta_file = dirName
-        createToolTip(self.newMetaFileButton,self.meta_file)
+    def setLogFile(self,dirName):
+        self.log_file = dirName
+        createToolTip(self.newLogFileButton,self.log_file)
         
         
     def selectDown(self,event):
@@ -94,11 +97,12 @@ class fileSelectorFrame(tk.Frame):
         imageID = self.selectBox.curselection()
         imageID = self.selectBox.get(imageID)
         self.activeID = imageID
-        print("Current selection is %s" % (imageID))
-        self.newFileSelected(imageID)
+        #TODO LOGGER
+        #print("NOTE: Current selection is %s" % (imageID))
+        self.newFileSelected(imageID,self.frameID)
         
     def getFilePath(self):
-        return self.meta_file
+        return self.log_file
     
     def getActiveID(self):
         return self.activeID

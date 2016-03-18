@@ -14,12 +14,14 @@ class doubleImageDialog(tk.Toplevel):
     secondImageFrame = 0
     
     linkImages = False
+    prevImageFunc = 0
+    nextImageFunc = 0
     
-    
-    def __init__(self,visImagePath,irImagePath,master=None):
+    def __init__(self,visImagePath,irImagePath,master=None,PIC=0,NIC=0):
+        self.prevImageFunc = PIC
+        self.nextImageFunc = NIC
         self.visImagePath = visImagePath
         self.irImagePath = irImagePath
-    
     
         tk.Toplevel.__init__(self,bg='#F0F0F0')
         self.title("Enlarged Image Viewer")
@@ -29,7 +31,7 @@ class doubleImageDialog(tk.Toplevel):
         
     def placeFrames(self):
         
-        self.firstImageFrame = panZoomFrame(self,self.visImagePath,self.frame1Updated)
+        self.firstImageFrame = panZoomFrame(self,self.visImagePath,self.frame1Updated,PIC=self.prevImageFunc,NIC=self.nextImageFunc)
         self.secondImageFrame = panZoomFrame(self,self.irImagePath,self.frame2Updated)
         
         self.firstImageFrame.grid(row=0,column=0)
@@ -40,7 +42,8 @@ class doubleImageDialog(tk.Toplevel):
         #Value is a string representation of what frame1did
         if(value == 'link-images'):
             self.linkImages = not self.linkImages
-            print(self.linkImages)
+            #TODO LOGGER
+            #print(self.linkImages)
             self.firstImageFrame.changeLinked(value=self.linkImages,update=False)
             self.secondImageFrame.changeLinked(value=self.linkImages,update=False)
             
@@ -70,7 +73,8 @@ class doubleImageDialog(tk.Toplevel):
         #Value is a string representation of what frame1did
         if(value == 'link-images'):
             self.linkImages = not self.linkImages
-            print(self.linkImages)
+            #TODO LOGGER
+            #print(self.linkImages)
             self.firstImageFrame.changeLinked(value=self.linkImages,update=False)
             self.secondImageFrame.changeLinked(value=self.linkImages,update=False)
             
@@ -98,7 +102,20 @@ class doubleImageDialog(tk.Toplevel):
             
             
 class panZoomFrame(tk.Frame):
-    #TODO, try removing self.image, do cropping / resizing in  display
+
+    #BEGIN CONFIG
+    #These are used if the program can't determine size of screen
+    defaultMaxHeight = 600.0
+    defaultMaxWidth = 600.0
+    #These are the offsets, adjust them to change the maximum size of the enlarged images
+    #self.maxWidth = (root.winfo_screenwidth() * self.maxWidthOffset)
+    #self.maxHeight = root.winfo_screenheight()- self.maxHeightOffset
+    maxWidthOffset = .4
+    maxHeightOffset = 150
+    
+    
+    #END CONFIG
+
     #Use temp variable before se.f.photoImage
     imageOriginalSize = 0
     imageOriginalCenter = 0
@@ -113,8 +130,8 @@ class panZoomFrame(tk.Frame):
     
     visImageSize = 0
     
-    maxHeight = 600.0
-    maxWidth = 600.0
+    defaultMaxHeight = 600.0
+    defaultMaxWidth = 600.0
     zoomFactorValue = 1.5   #How much does each click zoom 
     panFactorValue = .5     #How much does a pan offset image
     
@@ -132,12 +149,22 @@ class panZoomFrame(tk.Frame):
     panLeftButton=0
     panRightButton=0
     resetButton = 0
+    prevImageButton = 0
+    nextImageButton = 0
     
     updateTopFrameFunc = 0
-    def __init__(self,master,imagePath,updateFunc=0):
+    prevItemFunc = 0
+    nextItemFunc = 0
+    parent = 0
+    def __init__(self,master,imagePath,updateFunc=0,PIC=0,NIC=0):
+        self.parent = master
+        self.prevItemFunc = PIC
+        self.nextItemFunc = NIC
         tk.Frame.__init__(self,master,bg='#F0F0F0')
         self.imagePath = imagePath
         self.updateTopFrameFunc = updateFunc
+        
+        self.getMaxSizes()
         
         self.setupWidgets()
         self.placeWidgets()
@@ -150,13 +177,15 @@ class panZoomFrame(tk.Frame):
     #resizing and checks will be done by display
         path = self.imagePath
         if(not os.path.exists(path)):
-            print("Failed to set image at path: %s " %(path))
+            #TODO LOGGER
+            print("WARNING: Enlarged image dialog, failed to set image at path: %s " %(path))
             path = self.defaultImagePath
-            print("Image not found, using default image")
-        print("Setting image at path: %s " %(path))
+            #TODO LOGGER
+            #print("NOTE: Image not found, using default image")
+        #TODO LOGGER
+        #print("Setting image at path: %s " %(path))
         
-        self.imagePath = path  
-        print("image path = %s" %(self.imagePath) )       
+        self.imagePath = path       
         self.originalImage = Image.open(self.imagePath)
         #self.image = self.originalImage
         
@@ -246,6 +275,9 @@ class panZoomFrame(tk.Frame):
         self.resetButton = tk.Button(self,text="Reset",command=self.resetImage)
         
         self.imagesLinkedButton = tk.Button(self,text="Images Not Linked",command=self.changeLinked)
+        
+        self.prevImageButton = tk.Button(self,text="Previous image",command=self.prevImage)
+        self.nextImageButton = tk.Button(self,text="Next image",command=self.nextImage)
     def placeWidgets(self):
         #See notebook for designplan
         self.mainCanvas.grid(row=0,column=0,columnspan = 20,sticky='wens')
@@ -263,6 +295,19 @@ class panZoomFrame(tk.Frame):
         
         self.resetButton.grid(row=2,column=2,sticky='we')
         
+        
+        #TODO ENABLE
+        if(False):
+            if(self.prevItemFunc != 0):
+                self.prevImageButton.grid(row=1,column=4,sticky='we')
+            if(self.nextItemFunc != 0):
+                self.nextImageButton.grid(row=3,column=4,sticky='we')
+    def prevImage(self):
+        if(self.prevItemFunc != 0):
+            self.prevItemFunc(self)
+    def nextImage(self):
+        if(self.nextItemFunc !=0):
+            self.nextItemFunc(self)
     def resetImage(self,update=True):
         self.zoomFactor = 1
         self.imageCenter = self.imageOriginalCenter
@@ -281,7 +326,8 @@ class panZoomFrame(tk.Frame):
             self.updateTopFrameFunc('rotate-ccw')
 
     def zoomIn(self,update=True):
-        print("Zooming in")
+        #TODO LOGGER
+        #print("Zooming in")
         #Image center does not change, only bounds do
         self.zoomFactor = self.zoomFactor * self.zoomFactorValue
         self.displayImage()
@@ -289,7 +335,8 @@ class panZoomFrame(tk.Frame):
             self.updateTopFrameFunc('zoom-in')
         
     def zoomOut(self,update=True):
-        print("Zooming out")
+        #TODO LOGGER
+        #print("Zooming out")
         #Image center may change, if zooming out
         #Do nothing if zoom factor is already 1
         self.zoomFactor = self.zoomFactor / self.zoomFactorValue
@@ -298,7 +345,8 @@ class panZoomFrame(tk.Frame):
             self.updateTopFrameFunc('zoom-out')
     def panUp(self,update=True):
         #Move image up, unless at top edge
-        print("Panning up")
+        #TODO LOGGER
+        #print("Panning up")
         newImageX = self.imageCenter[0]
         newImageY = self.imageCenter[1] - self.imageSize[1]*self.panFactorValue
         self.imageCenter = [newImageX, newImageY]
@@ -308,7 +356,8 @@ class panZoomFrame(tk.Frame):
         
     def panDown(self,update=True):
         #Move image down, unless at bottom edge
-        print("Panning down")
+        #TODO LOGGER
+        #print("Panning down")
         newImageX = self.imageCenter[0]
         newImageY = self.imageCenter[1] + self.imageSize[1]*self.panFactorValue
         self.imageCenter = [newImageX, newImageY]
@@ -318,7 +367,8 @@ class panZoomFrame(tk.Frame):
         
     def panLeft(self,update=True):
         #Move image left, unless at left edge
-        print("Panning left")
+        #TODO LOGGER
+        #print("Panning left")
         newImageX = self.imageCenter[0] - self.imageSize[0]*self.panFactorValue
         newImageY = self.imageCenter[1]
         self.imageCenter = [newImageX, newImageY] 
@@ -328,7 +378,8 @@ class panZoomFrame(tk.Frame):
         
     def panRight(self,update=True):
         #Move image right, unless at right edge
-        print("Panning right")
+        #TODO LOGGER
+        #print("Panning right")
         newImageX = self.imageCenter[0] + self.imageSize[0]*self.panFactorValue
         newImageY = self.imageCenter[1]
         self.imageCenter = [newImageX, newImageY] 
@@ -360,8 +411,8 @@ class panZoomFrame(tk.Frame):
             newWidth = imSize[0] / ratio
             
         imSize = [newWidth, newHeight]    
-        widthRatio = imSize[0] / self.maxWidth
-        heightRatio = imSize[1] / self.maxHeight
+        widthRatio = float(imSize[0]) / self.maxWidth
+        heightRatio = float(imSize[1]) / self.maxHeight
         
         #These are already maxed out at 1,
         #These calculations should not be able to make them bigger
@@ -374,8 +425,9 @@ class panZoomFrame(tk.Frame):
         else:
             newWidth = imSize[0] / widthRatio
             newHeight = imSize[1] / widthRatio
-            
-            
+        #TODO LOGGER 
+        #print("New width: %f"%(newWidth))
+        #print("New height: %f"%(newHeight))
         return [int(newWidth), int(newHeight)]
         
     def checkBounds(self):
@@ -446,3 +498,15 @@ class panZoomFrame(tk.Frame):
         #print(self.image.size)
         #print("EdgeBounds")
         #print(edgeBounds)
+    def getMaxSizes(self):
+        try:
+            root = tk.Tk()
+            self.maxWidth = (root.winfo_screenwidth() * self.maxWidthOffset)
+            self.maxHeight = root.winfo_screenheight()- self.maxHeightOffset
+            #TODO LOGGER
+            print("NOTE: Setting maxWidth to %f"%(self.maxWidth))
+            print("NOTE: Setting maxHeight to %f"%(self.maxHeight))
+            root.destroy()
+        except:
+            #TODO LOGGER
+            print("NOTE: Could not load screen sizes")
