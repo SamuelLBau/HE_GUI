@@ -31,9 +31,9 @@ TODO:
 [X] add menu to top level with additional options
 [X] add tool-tips to buttons with current directory
 
-[] Add button to zoomable images to select next ir / vis image
-[] Add meta_file panel to separate IR / VIS files
-[] Write parser to handle CSV file
+[Y] Add button to zoomable images to select next ir / vis image
+[X] Add meta_file panel to separate IR / VIS files
+[X] Write parser to handle CSV file
 
 
 

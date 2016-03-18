@@ -7,7 +7,7 @@ set
 set PROGRAM_DIR=%PROGRAM_DIR:\\=\%
 echo. & echo PROGRAM_DIR home is %PROGRAM_DIR% & echo.
 
-set PATH = %PATH%;C:/PYTHON27
+set PATH=%PATH%;C:/PYTHON27
 
 python ./gui_layer/gui.py
 
