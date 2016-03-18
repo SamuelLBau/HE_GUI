@@ -452,6 +452,12 @@ class mainFrame(tk.Frame):
         #TODO LOGGER
         #print(self.profileFieldList)
         #print(stringList)
+        
+        #This ensures profile directory exists
+        if(not os.path.isdir(self.profileDir)):
+            os.mkdir(self.profileDir)
+            
+            
         dialog=saveProfileDialog(self.profileDir,self.profileFieldList,stringList)
         dialog.grab_set()
         dialog.wait_window(dialog)
